@@ -1,10 +1,14 @@
+/*
+ * @Author: Leeson
+ * @Date: 2024-11-23 23:33:38
+ */
 package logic
 
 import (
 	"context"
 
-	"rpc/internal/svc"
-	"rpc/rpc"
+	"AiChatPartner/rpc/chat/chat"
+	"AiChatPartner/rpc/chat/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,8 +27,8 @@ func NewPingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PingLogic {
 	}
 }
 
-func (l *PingLogic) Ping(in *rpc.Request) (*rpc.Response, error) {
+func (l *PingLogic) Ping(in *chat.Request) (*chat.Response, error) {
 	// todo: add your logic here and delete this line
 
-	return &rpc.Response{}, nil
+	return &chat.Response{}, nil
 }

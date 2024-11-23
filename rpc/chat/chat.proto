@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package chat;
+option go_package="./chat";
+
+message Request {
+  string ping = 1;
+}
+
+message Response {
+  string pong = 1;
+}
+
+message expandReq{
+  string shorten = 1;
+}
+
+message expandResp{
+  string url = 1;
+}
+
+message shortenReq{
+  string url = 1;
+}
+
+message shortenResp{
+  string shorten = 1;
+}
+
+service Chat {
+  rpc Ping(Request) returns(Response);
+  rpc expand(expandReq) returns(expandResp);
+  rpc shorten(shortenReq) returns(shortenResp);
+}
+
+
+
+

@@ -3,10 +3,18 @@
 
 package types
 
-type Request struct {
-	Name string `path:"name,options=you|me"`
+type ExpandReq struct {
+	Shorten string `form:"shorten"`
 }
 
-type Response struct {
-	Message string `json:"message"`
+type ExpandResp struct {
+	Url string `json:"url"`
+}
+
+type ShortenReq struct {
+	Url string `form:"url"`
+}
+
+type ShortenResp struct {
+	Shorten string `json:"shorten"`
 }
