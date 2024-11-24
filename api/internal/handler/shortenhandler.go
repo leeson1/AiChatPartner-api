@@ -1,3 +1,7 @@
+/*
+ * @Author: Leeson
+ * @Date: 2024-11-24 00:37:56
+ */
 package handler
 
 import (
@@ -6,6 +10,7 @@ import (
 	"AiChatPartner/api/internal/logic"
 	"AiChatPartner/api/internal/svc"
 	"AiChatPartner/api/internal/types"
+
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
