@@ -7,7 +7,7 @@ Chat:
     - 127.0.0.1:2379
     Key: chat.rpc
 Log:
-  ServiceName:  "chat-server"
+  ServiceName:  "api-server"
   Mode: "file"
   Encoding: "plain"
   Path: "/logs/AiChatPartner/api/api-server"

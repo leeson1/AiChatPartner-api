@@ -1,29 +1,24 @@
-/*
- * @Author: Leeson
- * @Date: 2024-11-24 00:37:56
- */
 package handler
 
 import (
 	"net/http"
 
-	"AiChatPartner/api/internal/logic"
-	"AiChatPartner/api/internal/svc"
-	"AiChatPartner/api/internal/types"
-
+	"AiChatPartner/api/api/internal/logic"
+	"AiChatPartner/api/api/internal/svc"
+	"AiChatPartner/api/api/internal/types"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func ShortenHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ApiHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.ShortenReq
+		var req types.Request
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := logic.NewShortenLogic(r.Context(), svcCtx)
-		resp, err := l.Shorten(&req)
+		l := logic.NewApiLogic(r.Context(), svcCtx)
+		resp, err := l.Api(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

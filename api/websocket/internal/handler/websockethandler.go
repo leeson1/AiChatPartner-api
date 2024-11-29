@@ -1,13 +1,10 @@
-/*
- * @Author: LEESON
- * @Date: 2024-11-06 23:05:42
- */
 package handler
 
 import (
-	"AiChatPartner/api/internal/svc"
 	"net/http"
 	"sync"
+
+	"AiChatPartner/api/websocket/internal/svc"
 
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -36,11 +33,11 @@ type IConnectionManager interface {
 	// ReadMessage(uint32) ([]byte, error)
 }
 
-var wg sync.WaitGroup
-
-var gcm ConnectionManager
-
-var uid uint32 = 1
+var (
+	wg  sync.WaitGroup
+	uid uint32             = 1
+	ic  IConnectionManager = NewConnectionManager()
+)
 
 func upgrade(w http.ResponseWriter, r *http.Request, svcCtx *svc.ServiceContext) (*websocket.Conn, error) {
 	ws := websocket.Upgrader{
@@ -138,9 +135,8 @@ func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 		defer node.Close()
 
-		gcm.connections = make(map[UserID]*Session)
-		gcm.Add(&node)
-		defer gcm.Remove(uid)
+		ic.Add(&node)
+		defer ic.Remove(uid)
 		logx.Infof("[WebsocketHandler] User %d connected", uid)
 
 		wg.Add(2)

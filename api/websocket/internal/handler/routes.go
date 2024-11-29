@@ -1,6 +1,6 @@
 /*
  * @Author: LEESON
- * @Date: 2024-11-24 14:16:10
+ * @Date: 2024-11-29 17:52:01
  */
 
 package handler
@@ -8,7 +8,7 @@ package handler
 import (
 	"net/http"
 
-	"AiChatPartner/api/internal/svc"
+	"AiChatPartner/api/websocket/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )
@@ -16,16 +16,6 @@ import (
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/expand",
-				Handler: ExpandHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/shorten",
-				Handler: ShortenHandler(serverCtx),
-			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/ws",
