@@ -3,6 +3,7 @@ module AiChatPartner
 go 1.23.2
 
 require (
+	github.com/gorilla/websocket v1.5.0
 	github.com/zeromicro/go-zero v1.7.3
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.35.1

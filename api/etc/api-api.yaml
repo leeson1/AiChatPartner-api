@@ -1,6 +1,6 @@
 Name: api-api
 Host: 0.0.0.0
-Port: 8888
+Port: 8081
 Chat:
   Etcd:
     Hosts:
@@ -10,7 +10,7 @@ Log:
   ServiceName:  "chat-server"
   Mode: "file"
   Encoding: "plain"
-  Path: "/logs/AiChatPartner/rpc/chat-server"
+  Path: "/logs/AiChatPartner/api/api-server"
   Level: "debug"
   MaxContentLength: 1024
   Stat: false
