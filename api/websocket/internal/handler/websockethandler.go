@@ -129,13 +129,13 @@ func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		sUid := r.URL.Query().Get("uid")
 		if sUid == "" {
 			logx.Error("[WebsocketHandler] uid is empty.")
-			http.Error(w, "uid is empty", http.StatusBadRequest)
+			conn.Close()
 			return
 		}
 		uid, err := strconv.ParseUint(sUid, 10, 32)
 		if err != nil {
 			logx.Error("[WebsocketHandler] uid convert error: ", err)
-			http.Error(w, "invalid uid", http.StatusBadRequest)
+			conn.Close()
 			return
 		}
 		userId := uint32(uid)
