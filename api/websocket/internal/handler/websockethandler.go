@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"sync"
 
 	"AiChatPartner/api/websocket/internal/svc"
@@ -30,13 +31,13 @@ type IConnectionManager interface {
 	// RemoveWithCode(uint32, int, string)
 	// Get(uint32) (*Session, bool)
 	// SendMessage(uint32, []byte) error
-	// ReadMessage(uint32) ([]byte, error)
+	ReadMessage(uint32) ([]byte, error)
 }
 
 var (
-	wg  sync.WaitGroup
-	uid uint32             = 1
-	ic  IConnectionManager = NewConnectionManager()
+	wg       sync.WaitGroup
+	ic       IConnectionManager = NewConnectionManager()
+	closeMsg chan struct{}      // 关闭信号
 )
 
 func upgrade(w http.ResponseWriter, r *http.Request, svcCtx *svc.ServiceContext) (*websocket.Conn, error) {
@@ -61,37 +62,34 @@ func NewConnectionManager() IConnectionManager {
 	}
 }
 
-func (n *Session) SendMessage() {
-	for {
-		select {
-		case message, ok := <-n.Message:
-			if !ok {
-				return
-			}
-			err := n.WsConn.WriteMessage(1, []byte(message))
-			if err != nil {
-				logx.Error("[SendMessage] write message error. ", err)
-				n.Close()
-				return
-			}
-		}
-	}
-}
+// func (cm *ConnectionManager) SendMessage(UserID uint32, message []byte) error {
+// 	for {
+// 		select {
+// 		case message, ok := <-n.Message:
+// 			if !ok {
+// 				return
+// 			}
+// 			err := n.WsConn.WriteMessage(1, []byte(message))
+// 			if err != nil {
+// 				logx.Error("[SendMessage] write message error. ", err)
+// 				n.Close()
+// 				return
+// 			}
+// 		}
+// 	}
+// }
 
-func (n *Session) RecvMessage() {
-	logx.Info("[RecvMessage] start ...")
-	for {
-		_, message, err := n.WsConn.ReadMessage()
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				logx.Error("[RecvMessage] read message error: ", err)
-			}
-			n.Close() // 关闭通道，通知其他监听者
-			return
-		}
-		logx.Info("[RecvMessage] recv message: ", string(message))
-		n.Message <- string(message)
+func (cm *ConnectionManager) ReadMessage(userID uint32) ([]byte, error) {
+
+	_, msg, err := cm.connections[UserID(userID)].WsConn.ReadMessage()
+	if err != nil {
+		logx.Error("[RecvMessage] read message error. ", err)
+		return nil, err
 	}
+
+	logx.Infof("[RecvMessage] User %d received message: %s", userID, string(msg))
+	return msg, nil
+
 }
 
 func (n *Session) Close() {
@@ -107,7 +105,6 @@ func (cm *ConnectionManager) Add(s *Session) {
 	cm.mutex.Lock()
 	defer cm.mutex.Unlock()
 	cm.connections[s.ID] = s
-	uid++
 }
 
 func (cm *ConnectionManager) Remove(userID uint32) {
@@ -128,6 +125,21 @@ func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			logx.Error("[WebsocketHandler] upgrade error. ", err)
 			return
 		}
+
+		sUid := r.URL.Query().Get("uid")
+		if sUid == "" {
+			logx.Error("[WebsocketHandler] uid is empty.")
+			http.Error(w, "uid is empty", http.StatusBadRequest)
+			return
+		}
+		uid, err := strconv.ParseUint(sUid, 10, 32)
+		if err != nil {
+			logx.Error("[WebsocketHandler] uid convert error: ", err)
+			http.Error(w, "invalid uid", http.StatusBadRequest)
+			return
+		}
+		userId := uint32(uid)
+
 		node := Session{
 			WsConn:  conn,
 			Message: make(chan string),
@@ -136,13 +148,30 @@ func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		defer node.Close()
 
 		ic.Add(&node)
-		defer ic.Remove(uid)
-		logx.Infof("[WebsocketHandler] User %d connected", uid)
+		defer ic.Remove(userId)
+		logx.Infof("[WebsocketHandler] User %d connected", userId)
 
-		wg.Add(2)
-		go node.SendMessage()
-		go node.RecvMessage()
+		// wg.Add(2)
+		// go ic.SendMessage()
+		go func() {
+			for {
+				_, err := ic.ReadMessage(userId)
+				if err != nil {
+					logx.Error("[WebsocketHandler] read message error. ", err)
+					ic.Remove(userId)
+					closeMsg <- struct{}{}
+					return
+				}
+			}
+		}()
 
-		wg.Wait()
+		// wg.Wait()
+
+		for {
+			<-closeMsg
+			logx.Info("[WebsocketHandler] closeMsg received ...")
+			return
+		}
+
 	}
 }
