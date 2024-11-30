@@ -79,17 +79,27 @@ func NewConnectionManager() IConnectionManager {
 // 	}
 // }
 
-func (cm *ConnectionManager) ReadMessage(userID uint32) ([]byte, error) {
-
+func (cm *ConnectionManager) HandlerReadMessage(userID uint32) ([]byte, error) {
 	_, msg, err := cm.connections[UserID(userID)].WsConn.ReadMessage()
 	if err != nil {
 		logx.Error("[RecvMessage] read message error. ", err)
-		return nil, err
+		return msg, err
 	}
 
 	logx.Infof("[RecvMessage] User %d received message: %s", userID, string(msg))
 	return msg, nil
+}
 
+func (cm *ConnectionManager) ReadMessage(userID uint32) ([]byte, error) {
+	for {
+		msg, err := cm.HandlerReadMessage(userID)
+		if err != nil {
+			return msg, err
+		}
+
+		//TODO: 业务逻辑处理
+
+	}
 }
 
 func (n *Session) Close() {
@@ -154,14 +164,12 @@ func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		// wg.Add(2)
 		// go ic.SendMessage()
 		go func() {
-			for {
-				_, err := ic.ReadMessage(userId)
-				if err != nil {
-					logx.Error("[WebsocketHandler] read message error. ", err)
-					ic.Remove(userId)
-					closeMsg <- struct{}{}
-					return
-				}
+			_, err := ic.ReadMessage(userId)
+			if err != nil {
+				logx.Error("[WebsocketHandler] read message error. ", err)
+				ic.Remove(userId)
+				closeMsg <- struct{}{}
+				return
 			}
 		}()
 
