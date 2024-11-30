@@ -6,7 +6,7 @@ package handler
 import (
 	"net/http"
 
-	"AiChatPartner/api/internal/svc"
+	"AiChatPartner/api/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )
@@ -16,13 +16,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/expand",
-				Handler: ExpandHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/shorten",
-				Handler: ShortenHandler(serverCtx),
+				Path:    "/from/:name",
+				Handler: ApiHandler(serverCtx),
 			},
 		},
 	)

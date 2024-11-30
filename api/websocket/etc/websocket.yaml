@@ -1,0 +1,13 @@
+Name: websocket-api
+Host: 0.0.0.0
+Port: 8081
+Log:
+  ServiceName:  "websocket-server"
+  Mode: "file"
+  Encoding: "plain"
+  Path: "/logs/AiChatPartner/api/websocket-server"
+  Level: "debug"
+  MaxContentLength: 1024
+  Stat: false
+  KeepDays: 7
+  Compress: true

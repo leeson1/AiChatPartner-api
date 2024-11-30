@@ -1,3 +1,7 @@
+/*
+ * @Author: LEESON
+ * @Date: 2024-11-29 17:51:51
+ */
 package main
 
 import (
@@ -5,9 +9,9 @@ import (
 	"fmt"
 	"os"
 
-	"AiChatPartner/api/internal/config"
-	"AiChatPartner/api/internal/handler"
-	"AiChatPartner/api/internal/svc"
+	"AiChatPartner/api/api/internal/config"
+	"AiChatPartner/api/api/internal/handler"
+	"AiChatPartner/api/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
