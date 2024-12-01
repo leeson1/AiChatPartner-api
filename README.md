@@ -1,9 +1,13 @@
+<!--
+ * @Author: Leeson
+ * @Date: 2024-11-24 00:37:56
+-->
 # AiChatPartner-api
 
 ## 环境
 1. go 1.23.2 linux/amd64
-2. go-zero 1.7.3
-3. goctl 1.7.3 linux/amd64
+2. goctl 1.7.3 linux/amd64
+3. mysql 5.7.43
 
 ## 运行
 
