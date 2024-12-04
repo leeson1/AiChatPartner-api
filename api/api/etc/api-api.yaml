@@ -16,3 +16,7 @@ Log:
   Stat: false
   KeepDays: 7
   Compress: true
+
+Auth:
+  AccessSecret: "12345678"
+  AccessExpire: 3600
