@@ -53,19 +53,14 @@ func NewRedisClient(redisConf redis.RedisConf) (*RedisClient, error) {
 	return &RedisClient{Redis: rds}, nil
 }
 
-func (rs *RedisClient) Set(key string, value string, expire int) error {
-	var err error
-	err = rs.Redis.Set(key, value)
-	if err != nil {
-		return fmt.Errorf("[redis_client] failed to set key %s: %w", key, err)
-	}
+func (rs *RedisClient) setExpire(key string, expire int) error {
 	if expire > 0 {
-		err = rs.Redis.Expire(key, expire)
+		err := rs.Redis.Expire(key, expire)
 		if err != nil {
-			return fmt.Errorf("[redis_client] failed to expire key %s: %w", key, err)
+			return err
 		}
 	}
-	return err
+	return nil
 }
 
 func (rs *RedisClient) Get(key string) (string, error) {
@@ -81,13 +76,63 @@ func (rs *RedisClient) Del(key string) error {
 	if err != nil {
 		return fmt.Errorf("[redis_client] failed to delete key %s: %w", key, err)
 	}
-	return err
+	return nil
 }
 
 func (rs *RedisClient) Expire(key string, exp int) error {
 	err := rs.Redis.Expire(key, exp)
 	if err != nil {
-		return fmt.Errorf("[redis_client] set redis error: %s", err)
+		return fmt.Errorf("[redis_client] error to expire key: %s error: %s", key, err)
 	}
 	return nil
+}
+
+func (rs *RedisClient) Set(key, value string) error {
+	err := rs.Redis.Set(key, value)
+	if err != nil {
+		return fmt.Errorf("[redis_client] failed to set key %s: %w", key, err)
+	}
+	return nil
+}
+
+func (rs *RedisClient) Hset(key, field, value string) error {
+	err := rs.Redis.Hset(key, field, value)
+	if err != nil {
+		return fmt.Errorf("[redis_client] error to hset key %s: %w", key, err)
+	}
+	return nil
+}
+
+func (rs *RedisClient) Hmset(key string, fieldsAndValues map[string]string) error {
+	err := rs.Redis.Hmset(key, fieldsAndValues)
+	if err != nil {
+		return fmt.Errorf("[redis_client] error to hmset key %s: %w", key, err)
+	}
+	return nil
+}
+
+func (rs *RedisClient) SetWithExpire(key, value string, expire int) error {
+	err := rs.Set(key, value)
+	if err != nil {
+		return err
+	}
+	return rs.setExpire(key, expire)
+}
+
+func (rs *RedisClient) HsetWithExpire(key, field, value string, expire int) error {
+	err := rs.Hset(key, field, value)
+	if err != nil {
+		return err
+	}
+
+	return rs.setExpire(key, expire)
+}
+
+func (rs *RedisClient) HmsetWithExpire(key string, fieldsAndValues map[string]string, expire int) error {
+	err := rs.Hmset(key, fieldsAndValues)
+	if err != nil {
+		return err
+	}
+
+	return rs.setExpire(key, expire)
 }

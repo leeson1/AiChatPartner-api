@@ -62,7 +62,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 		}
 
 		// 插入redis
-		err = redis.GetRedisClient().Set(strconv.Itoa(int(uid)), token, int(l.svcCtx.Config.Auth.AccessExpire))
+		err = redis.GetRedisClient().SetWithExpire(strconv.Itoa(int(uid)), token, int(l.svcCtx.Config.Auth.AccessExpire))
 		if err != nil {
 			logx.Error("[LoginLogic] set redis error: ", err)
 			return nil, err

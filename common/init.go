@@ -7,12 +7,9 @@ package common
 import (
 	"AiChatPartner/common/config"
 	"AiChatPartner/common/redis"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 func InitServices(configPath string) error {
-	logx.Info("[InitServices] configPath:", configPath)
 	conf, err := config.LoadConfig(configPath)
 	if err != nil {
 		return err

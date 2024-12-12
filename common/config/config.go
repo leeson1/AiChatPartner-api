@@ -47,7 +47,5 @@ func LoadConfig(configPath string) (*Config, error) {
 		return nil, fmt.Errorf("unmarshal config: %w", err)
 	}
 
-	logx.Info("[LoadConfig] common data:", string(data))
-
 	return &c, nil
 }

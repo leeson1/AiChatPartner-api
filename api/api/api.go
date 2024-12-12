@@ -7,13 +7,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	"os"
 
 	"AiChatPartner/api/api/internal/config"
 	"AiChatPartner/api/api/internal/handler"
 	"AiChatPartner/api/api/internal/svc"
 	"AiChatPartner/common"
+	"AiChatPartner/middle"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -25,19 +25,6 @@ var (
 	c          config.Config
 )
 
-func middleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// 在请求处理之前执行的逻辑
-		logx.Infof("received request: %s %s", r.Method, r.URL.Path)
-
-		// 调用下一个处理器
-		next(w, r)
-
-		// 在请求处理之后执行的逻辑
-		logx.Infof("finished request: %s %s", r.Method, r.URL.Path)
-	}
-}
-
 func main() {
 	flag.Parse()
 
@@ -46,7 +33,7 @@ func main() {
 	logx.AddWriter(logx.NewWriter(os.Stdout))
 
 	server := rest.MustNewServer(c.RestConf)
-	server.Use(middleware)
+	server.Use(middle.Middleware)
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)
