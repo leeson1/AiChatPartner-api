@@ -59,9 +59,11 @@ func (rs *RedisClient) Set(key string, value string, expire int) error {
 	if err != nil {
 		return fmt.Errorf("[redis_client] failed to set key %s: %w", key, err)
 	}
-	err = rs.Redis.Expire(key, expire)
-	if err != nil {
-		return fmt.Errorf("[redis_client] failed to expire key %s: %w", key, err)
+	if expire > 0 {
+		err = rs.Redis.Expire(key, expire)
+		if err != nil {
+			return fmt.Errorf("[redis_client] failed to expire key %s: %w", key, err)
+		}
 	}
 	return err
 }

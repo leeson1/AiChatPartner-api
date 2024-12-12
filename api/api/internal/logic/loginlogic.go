@@ -6,10 +6,12 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"AiChatPartner/api/api/internal/svc"
 	"AiChatPartner/api/api/internal/types"
+	"AiChatPartner/common/mysql"
 	"AiChatPartner/common/redis"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -40,14 +42,6 @@ func getJwtToken(secretKey string, iat, seconds int64, payload string) (string, 
 	return token.SignedString([]byte(secretKey))
 }
 
-func getUid(username string) int32 {
-	var uid int32
-	if username == "admin" {
-		uid = 1001
-	}
-	return uid
-}
-
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error) {
 	// todo: add your logic here and delete this line
 
@@ -58,8 +52,16 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 		if err != nil {
 			return nil, err
 		}
+
+		// 获取用户id
+		uid := mysql.GetUidByUserName(req.Username)
+		if uid == -1 {
+			logx.Error("[LoginLogic] get uid error. username: ", req.Username)
+
+			return nil, fmt.Errorf("[LoginLogic] get uid error. username: %s", req.Username)
+		}
+
 		// 插入redis
-		uid := getUid(req.Username)
 		err = redis.GetRedisClient().Set(strconv.Itoa(int(uid)), token, int(l.svcCtx.Config.Auth.AccessExpire))
 		if err != nil {
 			logx.Error("[LoginLogic] set redis error: ", err)
