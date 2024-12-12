@@ -13,9 +13,14 @@
 
 ```shell
 # api server
-cd api
+cd api/api
 go mod tidy
 go run api.go -f etc/api-api.yaml
+
+# websocket server
+cd api/websocket
+go mod tidy
+go run websocket.go -f etc/websocket.yaml
 
 # rpc server
 cd rpc/chat
