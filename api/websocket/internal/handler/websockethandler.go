@@ -3,10 +3,10 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"sync"
 
 	"AiChatPartner/api/websocket/internal/svc"
+	"AiChatPartner/common/mysql"
 	"AiChatPartner/common/redis"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -21,7 +21,7 @@ type Session struct {
 	ID        UserID
 }
 
-type UserID uint32
+type UserID uint64
 
 type ConnectionManager struct {
 	connections map[UserID]*Session
@@ -158,22 +158,18 @@ func (s *Server) WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		logx.Info("[WebsocketHandler] start ...")
 
 		// 获取uid
-		sUid := r.URL.Query().Get("uid")
-		if sUid == "" {
-			logx.Error("[WebsocketHandler] uid is empty.")
-			return
-		}
-		uid, err := strconv.ParseUint(sUid, 10, 32)
-		if err != nil {
-			logx.Error("[WebsocketHandler] uid convert error: ", err)
+		username := r.URL.Query().Get("username")
+		uid := mysql.GetUidByUserName(username)
+		if uid == -1 {
+			logx.Error("[WebsocketHandler] get uid error. username:", username)
 			return
 		}
 		userId := UserID(uid)
 
 		// 检查token
-		token, err := redis.GetRedisClient().Get(sUid)
+		token, err := redis.GetRedisClient().Get(string(userId))
 		if err != nil {
-			logx.Errorf("[WebsocketHandler] redis get uid[%s] token error. %s", sUid, err)
+			logx.Errorf("[WebsocketHandler] redis get username[%s] uid[%d] token error. %s", username, userId, err)
 			return
 		}
 		_, err = parseJwtToken(token, s.svc.Config.Auth.AccessSecret)
@@ -188,11 +184,10 @@ func (s *Server) WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			logx.Error("[WebsocketHandler] upgrade error. ", err)
 			return
 		}
-
 		node := Session{
 			WsConn:  conn,
 			Message: make(chan string),
-			ID:      UserID(uid),
+			ID:      userId,
 		}
 		defer node.Close()
 
