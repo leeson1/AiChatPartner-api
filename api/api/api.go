@@ -7,6 +7,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 
 	"AiChatPartner/api/api/internal/config"
@@ -24,6 +25,19 @@ var (
 	c          config.Config
 )
 
+func middleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 在请求处理之前执行的逻辑
+		logx.Infof("received request: %s %s", r.Method, r.URL.Path)
+
+		// 调用下一个处理器
+		next(w, r)
+
+		// 在请求处理之后执行的逻辑
+		logx.Infof("finished request: %s %s", r.Method, r.URL.Path)
+	}
+}
+
 func main() {
 	flag.Parse()
 
@@ -32,6 +46,7 @@ func main() {
 	logx.AddWriter(logx.NewWriter(os.Stdout))
 
 	server := rest.MustNewServer(c.RestConf)
+	server.Use(middleware)
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)
