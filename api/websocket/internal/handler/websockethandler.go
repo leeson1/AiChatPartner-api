@@ -1,12 +1,16 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
 
 	"AiChatPartner/api/websocket/internal/svc"
+	"AiChatPartner/common/mysql"
+	"AiChatPartner/common/redis"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -18,7 +22,7 @@ type Session struct {
 	ID        UserID
 }
 
-type UserID uint32
+type UserID uint64
 
 type ConnectionManager struct {
 	connections map[UserID]*Session
@@ -27,11 +31,11 @@ type ConnectionManager struct {
 
 type IConnectionManager interface {
 	Add(*Session)
-	Remove(uint32)
+	Remove(UserID)
 	// RemoveWithCode(uint32, int, string)
-	// Get(uint32) (*Session, bool)
-	// SendMessage(uint32, []byte) error
-	ReadMessage(uint32) ([]byte, error)
+	Get(UserID) (*Session, bool)
+	SendMessage(UserID) error
+	ReadMessage(UserID) ([]byte, error)
 }
 
 var (
@@ -62,34 +66,50 @@ func NewConnectionManager() IConnectionManager {
 	}
 }
 
-// func (cm *ConnectionManager) SendMessage(UserID uint32, message []byte) error {
-// 	for {
-// 		select {
-// 		case message, ok := <-n.Message:
-// 			if !ok {
-// 				return
-// 			}
-// 			err := n.WsConn.WriteMessage(1, []byte(message))
-// 			if err != nil {
-// 				logx.Error("[SendMessage] write message error. ", err)
-// 				n.Close()
-// 				return
-// 			}
-// 		}
-// 	}
-// }
+func (cm *ConnectionManager) SendMessage(userId UserID) error {
+	for {
+		select {
+		case message, ok := <-cm.connections[userId].Message:
+			if !ok {
+				return nil
+			}
+			for uid, s := range cm.connections {
+				if uid == userId {
+					continue
+				}
+				err := cm.connections[s.ID].WsConn.WriteMessage(1, []byte(message))
+				if err != nil {
+					logx.Error("[SendMessage] write message error. ", err)
+					// cm.Remove(s.ID)
+					return err
+				}
+			}
+		}
+	}
+}
 
-func (cm *ConnectionManager) ReadMessage(userID uint32) ([]byte, error) {
-
+func (cm *ConnectionManager) readMessage(userID UserID) ([]byte, error) {
 	_, msg, err := cm.connections[UserID(userID)].WsConn.ReadMessage()
 	if err != nil {
 		logx.Error("[RecvMessage] read message error. ", err)
-		return nil, err
+		return msg, err
 	}
 
 	logx.Infof("[RecvMessage] User %d received message: %s", userID, string(msg))
+	cm.connections[UserID(userID)].Message <- string(msg)
 	return msg, nil
+}
 
+func (cm *ConnectionManager) ReadMessage(userID UserID) ([]byte, error) {
+	for {
+		msg, err := cm.readMessage(userID)
+		if err != nil {
+			return msg, err
+		}
+
+		//TODO: 业务逻辑处理
+
+	}
 }
 
 func (n *Session) Close() {
@@ -107,7 +127,7 @@ func (cm *ConnectionManager) Add(s *Session) {
 	cm.connections[s.ID] = s
 }
 
-func (cm *ConnectionManager) Remove(userID uint32) {
+func (cm *ConnectionManager) Remove(userID UserID) {
 	cm.mutex.Lock()
 	defer cm.mutex.Unlock()
 	if s, ok := cm.connections[UserID(userID)]; ok {
@@ -116,34 +136,60 @@ func (cm *ConnectionManager) Remove(userID uint32) {
 	}
 }
 
-func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func (cm *ConnectionManager) Get(userID UserID) (*Session, bool) {
+	cm.mutex.RLock()
+	defer cm.mutex.RUnlock()
+	s, ok := cm.connections[UserID(userID)]
+	return s, ok
+}
+
+func parseJwtToken(tokenString, secretKey string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// 确保使用的是正确的签名方法
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secretKey), nil
+	})
+}
+
+func (s *Server) WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		logx.Info("[WebsocketHandler] start ...")
+
+		// 获取uid
+		username := r.URL.Query().Get("username")
+		uid := mysql.GetUidByUserName(username)
+		if uid == -1 {
+			logx.Error("[WebsocketHandler] get uid error. username:", username)
+			return
+		}
+		userId := UserID(uid)
+		userIdStr := strconv.FormatUint(uint64(userId), 10)
+
+		// 检查token
+		token, err := redis.GetRedisClient().Hget(userIdStr, "token")
+		if err != nil {
+			logx.Errorf("[WebsocketHandler] redis get token error. key:[%s] err:[%s]", userIdStr, err)
+			return
+		}
+		_, err = parseJwtToken(token, s.svc.Config.Auth.AccessSecret)
+		if err != nil {
+			logx.Errorf("[WebsocketHandler] parse token:%s error:%s ", token, err)
+			return
+		}
+
+		// 升级为websocket
 		conn, err := upgrade(w, r, svcCtx)
 		if err != nil {
 			logx.Error("[WebsocketHandler] upgrade error. ", err)
 			return
 		}
-
-		sUid := r.URL.Query().Get("uid")
-		if sUid == "" {
-			logx.Error("[WebsocketHandler] uid is empty.")
-			conn.Close()
-			return
-		}
-		uid, err := strconv.ParseUint(sUid, 10, 32)
-		if err != nil {
-			logx.Error("[WebsocketHandler] uid convert error: ", err)
-			conn.Close()
-			return
-		}
-		userId := uint32(uid)
-
 		node := Session{
 			WsConn:  conn,
 			Message: make(chan string),
-			ID:      UserID(uid),
+			ID:      userId,
 		}
 		defer node.Close()
 
@@ -152,16 +198,24 @@ func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		logx.Infof("[WebsocketHandler] User %d connected", userId)
 
 		// wg.Add(2)
-		// go ic.SendMessage()
+
 		go func() {
-			for {
-				_, err := ic.ReadMessage(userId)
-				if err != nil {
-					logx.Error("[WebsocketHandler] read message error. ", err)
-					ic.Remove(userId)
-					closeMsg <- struct{}{}
-					return
-				}
+			err := ic.SendMessage(userId)
+			if err != nil {
+				logx.Error("[WebsocketHandler] send message error. ", err)
+				ic.Remove(userId)
+				closeMsg <- struct{}{}
+				return
+			}
+		}()
+
+		go func() {
+			_, err := ic.ReadMessage(userId)
+			if err != nil {
+				logx.Error("[WebsocketHandler] read message error. ", err)
+				ic.Remove(userId)
+				closeMsg <- struct{}{}
+				return
 			}
 		}()
 

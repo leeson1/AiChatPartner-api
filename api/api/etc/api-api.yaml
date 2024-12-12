@@ -16,3 +16,13 @@ Log:
   Stat: false
   KeepDays: 7
   Compress: true
+
+Auth:
+  AccessSecret: "12345678"
+  AccessExpire: 3600
+
+RedisConf:
+  Host: "0.0.0.0:8090"
+  Pass: "leesonredis"
+  Type: "node" # node 单节点 redis，cluster redis 集群
+  Tls: false

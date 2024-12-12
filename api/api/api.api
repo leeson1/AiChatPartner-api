@@ -1,15 +1,36 @@
 syntax = "v1"
 
-type Request {
-	Name string `path:"name,options=you|me"`
+type LoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
-type Response {
-	Message string `json:"message"`
+type LoginRsp {
+	RetCode int32 `json:"retCode"`
+	Token string `json:"token"`
+}
+
+type UserInfoReq {
+	ID string `json:"id"`
+}
+
+type UserInfoRsp {
+	Name string `json:"name"`
+}
+
+@server (
+	jwt: Auth
+)
+service api-api {
+	@handler ping
+	get /ping
+
+	@handler userInfo
+	post /user/info (UserInfoReq) returns (UserInfoRsp)
 }
 
 service api-api {
-	@handler ApiHandler
-	get /from/:name (Request) returns (Response)
+	@handler login
+	post /login (LoginReq) returns (LoginRsp)
 }
 
