@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
 
 	"AiChatPartner/api/websocket/internal/svc"
+	"AiChatPartner/common/redis"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -139,29 +142,52 @@ func (cm *ConnectionManager) Get(userID UserID) (*Session, bool) {
 	return s, ok
 }
 
-func WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func parseJwtToken(tokenString, secretKey string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// 确保使用的是正确的签名方法
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secretKey), nil
+	})
+}
+
+func (s *Server) WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		logx.Info("[WebsocketHandler] start ...")
-		conn, err := upgrade(w, r, svcCtx)
-		if err != nil {
-			logx.Error("[WebsocketHandler] upgrade error. ", err)
-			return
-		}
 
+		// 获取uid
 		sUid := r.URL.Query().Get("uid")
 		if sUid == "" {
 			logx.Error("[WebsocketHandler] uid is empty.")
-			conn.Close()
 			return
 		}
 		uid, err := strconv.ParseUint(sUid, 10, 32)
 		if err != nil {
 			logx.Error("[WebsocketHandler] uid convert error: ", err)
-			conn.Close()
 			return
 		}
 		userId := UserID(uid)
+
+		// 检查token
+		token, err := redis.GetRedisClient().Get(sUid)
+		if err != nil {
+			logx.Errorf("[WebsocketHandler] redis get uid[%s] token error. %s", sUid, err)
+			return
+		}
+		_, err = parseJwtToken(token, s.svc.Config.Auth.AccessSecret)
+		if err != nil {
+			logx.Errorf("[WebsocketHandler] parse token:%s error:%s ", token, err)
+			return
+		}
+
+		// 升级为websocket
+		conn, err := upgrade(w, r, svcCtx)
+		if err != nil {
+			logx.Error("[WebsocketHandler] upgrade error. ", err)
+			return
+		}
 
 		node := Session{
 			WsConn:  conn,

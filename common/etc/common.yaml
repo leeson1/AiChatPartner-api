@@ -1,0 +1,10 @@
+MySQLConf:
+  Host: "0.0.0.0:3306"
+  Username: "user"
+  Pass: "pass"
+
+RedisConf:
+  Host: "0.0.0.0:8090"
+  Pass: "leesonredis"
+  Type: "node" # node 单节点 redis，cluster redis 集群
+  Tls: false
