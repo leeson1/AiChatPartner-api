@@ -5,12 +5,16 @@
 package filter
 
 import (
+	"AiChatPartner/common/mysql"
 	"net/http"
+
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 func FilterToken(w http.ResponseWriter, r *http.Request) error {
-	// username := r.Header.Get("username")
-	// uid := mysql.GetUidByUserName(username)
+	username := r.Header.Get("username")
+	uid := mysql.GetUidByUserName(username)
+	logx.Info("[FilterToken] uid: ", uid)
 
 	// 这里想写一个过滤器，如果请求没有携带 token，就返回 401
 	// token := r.Header.Get("token")

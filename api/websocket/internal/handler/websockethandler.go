@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"AiChatPartner/api/websocket/internal/svc"
@@ -165,11 +166,12 @@ func (s *Server) WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 		userId := UserID(uid)
+		userIdStr := strconv.FormatUint(uint64(userId), 10)
 
 		// 检查token
-		token, err := redis.GetRedisClient().Get(string(userId))
+		token, err := redis.GetRedisClient().Hget(userIdStr, "token")
 		if err != nil {
-			logx.Errorf("[WebsocketHandler] redis get username[%s] uid[%d] token error. %s", username, userId, err)
+			logx.Errorf("[WebsocketHandler] redis get token error. key:[%s] err:[%s]", userIdStr, err)
 			return
 		}
 		_, err = parseJwtToken(token, s.svc.Config.Auth.AccessSecret)

@@ -62,7 +62,14 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 		}
 
 		// 插入redis
-		err = redis.GetRedisClient().SetWithExpire(strconv.Itoa(int(uid)), token, int(l.svcCtx.Config.Auth.AccessExpire))
+		userInfo := redis.UserInfo{
+			Username: req.Username,
+			Uid:      uid,
+			Token:    token,
+		}
+		redisKey := strconv.Itoa(int(uid))
+		exp := int(l.svcCtx.Config.Auth.AccessExpire)
+		err = redis.GetRedisClient().HmsetWithExpire(redisKey, userInfo.ToMap(), exp)
 		if err != nil {
 			logx.Error("[LoginLogic] set redis error: ", err)
 			return nil, err

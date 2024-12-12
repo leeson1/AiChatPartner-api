@@ -7,6 +7,7 @@ package redis
 import (
 	"AiChatPartner/common/config"
 	"fmt"
+	"strconv"
 	"sync"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -17,11 +18,25 @@ type RedisClient struct {
 	Redis *redis.Redis
 }
 
+type UserInfo struct {
+	Username string `redis:"username"`
+	Uid      int64  `redis:"uid"`
+	Token    string `redis:"token"`
+}
+
 var (
 	rdsInstance *RedisClient = &RedisClient{}
 	rc          redis.RedisConf
 	once        sync.Once
 )
+
+func (u *UserInfo) ToMap() map[string]string {
+	return map[string]string{
+		"username": u.Username,
+		"uid":      strconv.FormatInt(u.Uid, 10),
+		"token":    u.Token,
+	}
+}
 
 func InitRedis(c *config.Config) error {
 	rc.Host = c.RedisConf.Host
@@ -66,7 +81,15 @@ func (rs *RedisClient) setExpire(key string, expire int) error {
 func (rs *RedisClient) Get(key string) (string, error) {
 	result, err := rs.Redis.Get(key)
 	if err != nil {
-		return "", fmt.Errorf("[redis_client] failed to get key %s: %w", key, err)
+		return "", fmt.Errorf("[redis_client] error to get key: %s err: %w", key, err)
+	}
+	return result, nil
+}
+
+func (rs *RedisClient) Hget(key, field string) (string, error) {
+	result, err := rs.Redis.Hget(key, field)
+	if err != nil {
+		return "", fmt.Errorf("[redis_client] error to hget key %s err: %w", key, err)
 	}
 	return result, nil
 }
@@ -74,7 +97,7 @@ func (rs *RedisClient) Get(key string) (string, error) {
 func (rs *RedisClient) Del(key string) error {
 	_, err := rs.Redis.Del(key)
 	if err != nil {
-		return fmt.Errorf("[redis_client] failed to delete key %s: %w", key, err)
+		return fmt.Errorf("[redis_client] error to delete key %s: %w", key, err)
 	}
 	return nil
 }
@@ -133,6 +156,5 @@ func (rs *RedisClient) HmsetWithExpire(key string, fieldsAndValues map[string]st
 	if err != nil {
 		return err
 	}
-
 	return rs.setExpire(key, expire)
 }
