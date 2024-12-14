@@ -23,17 +23,12 @@ func NewChatServer(svcCtx *svc.ServiceContext) *ChatServer {
 	}
 }
 
-func (s *ChatServer) Ping(ctx context.Context, in *chat.Request) (*chat.Response, error) {
-	l := logic.NewPingLogic(ctx, s.svcCtx)
-	return l.Ping(in)
+func (s *ChatServer) Login(ctx context.Context, in *chat.LoginReq) (*chat.LoginRsp, error) {
+	l := logic.NewLoginLogic(ctx, s.svcCtx)
+	return l.Login(in)
 }
 
-func (s *ChatServer) Expand(ctx context.Context, in *chat.ExpandReq) (*chat.ExpandResp, error) {
-	l := logic.NewExpandLogic(ctx, s.svcCtx)
-	return l.Expand(in)
-}
-
-func (s *ChatServer) Shorten(ctx context.Context, in *chat.ShortenReq) (*chat.ShortenResp, error) {
-	l := logic.NewShortenLogic(ctx, s.svcCtx)
-	return l.Shorten(in)
+func (s *ChatServer) UserInfo(ctx context.Context, in *chat.UserInfoReq) (*chat.UserInfoRsp, error) {
+	l := logic.NewUserInfoLogic(ctx, s.svcCtx)
+	return l.UserInfo(in)
 }

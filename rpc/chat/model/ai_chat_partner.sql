@@ -4,7 +4,7 @@
  Source Server         : VM-UbuntuServer_docker_mysql5.7
  Source Server Type    : MySQL
  Source Server Version : 50743
- Source Host           : 175.178.219.9:3306
+ Source Host           : 0.0.0.0:3306
  Source Schema         : ai_chat_partner
 
  Target Server Type    : MySQL

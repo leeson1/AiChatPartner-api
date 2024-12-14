@@ -12,7 +12,9 @@ import (
 func Middleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// 在请求处理之前执行的逻辑
-		filter.FilterToken(w, r)
+		if err := filter.FilterToken(w, r); err != nil {
+			return
+		}
 
 		// 调用下一个处理器
 		next(w, r)

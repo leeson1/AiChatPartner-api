@@ -1,3 +1,7 @@
+/*
+ * @Author: Leeson
+ * @Date: 2024-12-12 23:35:59
+ */
 syntax = "v1"
 
 type LoginReq {
@@ -11,7 +15,7 @@ type LoginRsp {
 }
 
 type UserInfoReq {
-	ID string `json:"id"`
+	Username string `json:"username"`
 }
 
 type UserInfoRsp {

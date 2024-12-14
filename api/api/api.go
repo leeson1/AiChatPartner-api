@@ -33,6 +33,8 @@ func main() {
 	logx.AddWriter(logx.NewWriter(os.Stdout))
 
 	server := rest.MustNewServer(c.RestConf)
+	rest.WithCors("*") //允许跨域
+	rest.WithCorsHeaders("loginHandler", "userInfoHandler")
 	server.Use(middle.Middleware)
 	defer server.Stop()
 

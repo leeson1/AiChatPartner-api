@@ -32,6 +32,7 @@ type (
 		FindOne(ctx context.Context, uin uint64) (*AcUser, error)
 		Update(ctx context.Context, data *AcUser) error
 		Delete(ctx context.Context, uin uint64) error
+		GetUserByUsername(ctx context.Context, username string) (*AcUser, error)
 	}
 
 	defaultAcUserModel struct {
@@ -76,6 +77,23 @@ func (m *defaultAcUserModel) FindOne(ctx context.Context, uin uint64) (*AcUser, 
 		query := fmt.Sprintf("select %s from %s where `uin` = ? limit 1", acUserRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, uin)
 	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAcUserModel) GetUserByUsername(ctx context.Context, username string) (*AcUser, error) {
+	var resp AcUser
+	err := m.QueryRowCtx(ctx, &resp, username, func (ctx context.Context, conn  sqlx.SqlConn, v any)  error {
+		query := fmt.Sprintf("select %s from %s where `username` = ? limit 1", acUserRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, username)
+	})
+
 	switch err {
 	case nil:
 		return &resp, nil

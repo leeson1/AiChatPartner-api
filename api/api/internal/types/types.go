@@ -14,7 +14,7 @@ type LoginRsp struct {
 }
 
 type UserInfoReq struct {
-	ID string `json:"id"`
+	Username string `json:"username"`
 }
 
 type UserInfoRsp struct {

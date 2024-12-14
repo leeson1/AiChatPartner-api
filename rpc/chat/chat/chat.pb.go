@@ -20,16 +20,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Request struct {
+type LoginReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Ping string `protobuf:"bytes,1,opt,name=ping,proto3" json:"ping,omitempty"`
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 }
 
-func (x *Request) Reset() {
-	*x = Request{}
+func (x *LoginReq) Reset() {
+	*x = LoginReq{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_chat_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -37,13 +38,13 @@ func (x *Request) Reset() {
 	}
 }
 
-func (x *Request) String() string {
+func (x *LoginReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Request) ProtoMessage() {}
+func (*LoginReq) ProtoMessage() {}
 
-func (x *Request) ProtoReflect() protoreflect.Message {
+func (x *LoginReq) ProtoReflect() protoreflect.Message {
 	mi := &file_chat_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,28 +56,33 @@ func (x *Request) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Request.ProtoReflect.Descriptor instead.
-func (*Request) Descriptor() ([]byte, []int) {
+// Deprecated: Use LoginReq.ProtoReflect.Descriptor instead.
+func (*LoginReq) Descriptor() ([]byte, []int) {
 	return file_chat_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Request) GetPing() string {
+func (x *LoginReq) GetUsername() string {
 	if x != nil {
-		return x.Ping
+		return x.Username
 	}
 	return ""
 }
 
-type Response struct {
+func (x *LoginReq) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type LoginRsp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	Pong string `protobuf:"bytes,1,opt,name=pong,proto3" json:"pong,omitempty"`
 }
 
-func (x *Response) Reset() {
-	*x = Response{}
+func (x *LoginRsp) Reset() {
+	*x = LoginRsp{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_chat_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -84,13 +90,13 @@ func (x *Response) Reset() {
 	}
 }
 
-func (x *Response) String() string {
+func (x *LoginRsp) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Response) ProtoMessage() {}
+func (*LoginRsp) ProtoMessage() {}
 
-func (x *Response) ProtoReflect() protoreflect.Message {
+func (x *LoginRsp) ProtoReflect() protoreflect.Message {
 	mi := &file_chat_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -102,28 +108,22 @@ func (x *Response) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Response.ProtoReflect.Descriptor instead.
-func (*Response) Descriptor() ([]byte, []int) {
+// Deprecated: Use LoginRsp.ProtoReflect.Descriptor instead.
+func (*LoginRsp) Descriptor() ([]byte, []int) {
 	return file_chat_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Response) GetPong() string {
-	if x != nil {
-		return x.Pong
-	}
-	return ""
-}
-
-type ExpandReq struct {
+type UserInfoReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Shorten string `protobuf:"bytes,1,opt,name=shorten,proto3" json:"shorten,omitempty"`
+	Uid      string `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 }
 
-func (x *ExpandReq) Reset() {
-	*x = ExpandReq{}
+func (x *UserInfoReq) Reset() {
+	*x = UserInfoReq{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_chat_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -131,13 +131,13 @@ func (x *ExpandReq) Reset() {
 	}
 }
 
-func (x *ExpandReq) String() string {
+func (x *UserInfoReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ExpandReq) ProtoMessage() {}
+func (*UserInfoReq) ProtoMessage() {}
 
-func (x *ExpandReq) ProtoReflect() protoreflect.Message {
+func (x *UserInfoReq) ProtoReflect() protoreflect.Message {
 	mi := &file_chat_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -149,28 +149,33 @@ func (x *ExpandReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExpandReq.ProtoReflect.Descriptor instead.
-func (*ExpandReq) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserInfoReq.ProtoReflect.Descriptor instead.
+func (*UserInfoReq) Descriptor() ([]byte, []int) {
 	return file_chat_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *ExpandReq) GetShorten() string {
+func (x *UserInfoReq) GetUid() string {
 	if x != nil {
-		return x.Shorten
+		return x.Uid
 	}
 	return ""
 }
 
-type ExpandResp struct {
+func (x *UserInfoReq) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+type UserInfoRsp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 }
 
-func (x *ExpandResp) Reset() {
-	*x = ExpandResp{}
+func (x *UserInfoRsp) Reset() {
+	*x = UserInfoRsp{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_chat_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -178,13 +183,13 @@ func (x *ExpandResp) Reset() {
 	}
 }
 
-func (x *ExpandResp) String() string {
+func (x *UserInfoRsp) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ExpandResp) ProtoMessage() {}
+func (*UserInfoRsp) ProtoMessage() {}
 
-func (x *ExpandResp) ProtoReflect() protoreflect.Message {
+func (x *UserInfoRsp) ProtoReflect() protoreflect.Message {
 	mi := &file_chat_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -196,139 +201,33 @@ func (x *ExpandResp) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExpandResp.ProtoReflect.Descriptor instead.
-func (*ExpandResp) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserInfoRsp.ProtoReflect.Descriptor instead.
+func (*UserInfoRsp) Descriptor() ([]byte, []int) {
 	return file_chat_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *ExpandResp) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
-type ShortenReq struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
-}
-
-func (x *ShortenReq) Reset() {
-	*x = ShortenReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_chat_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ShortenReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ShortenReq) ProtoMessage() {}
-
-func (x *ShortenReq) ProtoReflect() protoreflect.Message {
-	mi := &file_chat_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ShortenReq.ProtoReflect.Descriptor instead.
-func (*ShortenReq) Descriptor() ([]byte, []int) {
-	return file_chat_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *ShortenReq) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
-type ShortenResp struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Shorten string `protobuf:"bytes,1,opt,name=shorten,proto3" json:"shorten,omitempty"`
-}
-
-func (x *ShortenResp) Reset() {
-	*x = ShortenResp{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_chat_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ShortenResp) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ShortenResp) ProtoMessage() {}
-
-func (x *ShortenResp) ProtoReflect() protoreflect.Message {
-	mi := &file_chat_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ShortenResp.ProtoReflect.Descriptor instead.
-func (*ShortenResp) Descriptor() ([]byte, []int) {
-	return file_chat_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *ShortenResp) GetShorten() string {
-	if x != nil {
-		return x.Shorten
-	}
-	return ""
 }
 
 var File_chat_proto protoreflect.FileDescriptor
 
 var file_chat_proto_rawDesc = []byte{
 	0x0a, 0x0a, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x63, 0x68,
-	0x61, 0x74, 0x22, 0x1d, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a,
-	0x04, 0x70, 0x69, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x70, 0x69, 0x6e,
-	0x67, 0x22, 0x1e, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x12, 0x0a,
-	0x04, 0x70, 0x6f, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x70, 0x6f, 0x6e,
-	0x67, 0x22, 0x25, 0x0a, 0x09, 0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x12, 0x18,
-	0x0a, 0x07, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x65, 0x6e, 0x22, 0x1e, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x61,
-	0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x1e, 0x0a, 0x0a, 0x73, 0x68, 0x6f, 0x72,
-	0x74, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x27, 0x0a, 0x0b, 0x73, 0x68, 0x6f, 0x72,
-	0x74, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x68, 0x6f, 0x72, 0x74,
-	0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x65,
-	0x6e, 0x32, 0x8a, 0x01, 0x0a, 0x04, 0x43, 0x68, 0x61, 0x74, 0x12, 0x25, 0x0a, 0x04, 0x50, 0x69,
-	0x6e, 0x67, 0x12, 0x0d, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x0e, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x2b, 0x0a, 0x06, 0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x12, 0x0f, 0x2e, 0x63, 0x68,
-	0x61, 0x74, 0x2e, 0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x1a, 0x10, 0x2e, 0x63,
-	0x68, 0x61, 0x74, 0x2e, 0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x12, 0x2e,
-	0x0a, 0x07, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x65, 0x6e, 0x12, 0x10, 0x2e, 0x63, 0x68, 0x61, 0x74,
-	0x2e, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x1a, 0x11, 0x2e, 0x63, 0x68,
-	0x61, 0x74, 0x2e, 0x73, 0x68, 0x6f, 0x72, 0x74, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x42, 0x08,
-	0x5a, 0x06, 0x2e, 0x2f, 0x63, 0x68, 0x61, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x74, 0x22, 0x42, 0x0a, 0x08, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x1a,
+	0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61,
+	0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61,
+	0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x22, 0x0a, 0x0a, 0x08, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x52,
+	0x73, 0x70, 0x22, 0x3b, 0x0a, 0x0b, 0x75, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65,
+	0x71, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
+	0x75, 0x69, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x22,
+	0x0d, 0x0a, 0x0b, 0x75, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73, 0x70, 0x32, 0x61,
+	0x0a, 0x04, 0x43, 0x68, 0x61, 0x74, 0x12, 0x27, 0x0a, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12,
+	0x0e, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x1a,
+	0x0e, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x73, 0x70, 0x12,
+	0x30, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x11, 0x2e, 0x63, 0x68,
+	0x61, 0x74, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x1a, 0x11,
+	0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73,
+	0x70, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2f, 0x63, 0x68, 0x61, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -343,24 +242,20 @@ func file_chat_proto_rawDescGZIP() []byte {
 	return file_chat_proto_rawDescData
 }
 
-var file_chat_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_chat_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_chat_proto_goTypes = []interface{}{
-	(*Request)(nil),     // 0: chat.Request
-	(*Response)(nil),    // 1: chat.Response
-	(*ExpandReq)(nil),   // 2: chat.expandReq
-	(*ExpandResp)(nil),  // 3: chat.expandResp
-	(*ShortenReq)(nil),  // 4: chat.shortenReq
-	(*ShortenResp)(nil), // 5: chat.shortenResp
+	(*LoginReq)(nil),    // 0: chat.loginReq
+	(*LoginRsp)(nil),    // 1: chat.loginRsp
+	(*UserInfoReq)(nil), // 2: chat.userInfoReq
+	(*UserInfoRsp)(nil), // 3: chat.userInfoRsp
 }
 var file_chat_proto_depIdxs = []int32{
-	0, // 0: chat.Chat.Ping:input_type -> chat.Request
-	2, // 1: chat.Chat.expand:input_type -> chat.expandReq
-	4, // 2: chat.Chat.shorten:input_type -> chat.shortenReq
-	1, // 3: chat.Chat.Ping:output_type -> chat.Response
-	3, // 4: chat.Chat.expand:output_type -> chat.expandResp
-	5, // 5: chat.Chat.shorten:output_type -> chat.shortenResp
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	0, // 0: chat.Chat.login:input_type -> chat.loginReq
+	2, // 1: chat.Chat.userInfo:input_type -> chat.userInfoReq
+	1, // 2: chat.Chat.login:output_type -> chat.loginRsp
+	3, // 3: chat.Chat.userInfo:output_type -> chat.userInfoRsp
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -373,7 +268,7 @@ func file_chat_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_chat_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Request); i {
+			switch v := v.(*LoginReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -385,7 +280,7 @@ func file_chat_proto_init() {
 			}
 		}
 		file_chat_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Response); i {
+			switch v := v.(*LoginRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -397,7 +292,7 @@ func file_chat_proto_init() {
 			}
 		}
 		file_chat_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ExpandReq); i {
+			switch v := v.(*UserInfoReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -409,31 +304,7 @@ func file_chat_proto_init() {
 			}
 		}
 		file_chat_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ExpandResp); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_chat_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ShortenReq); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_chat_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ShortenResp); i {
+			switch v := v.(*UserInfoRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -451,7 +322,7 @@ func file_chat_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_chat_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -19,18 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Chat_Ping_FullMethodName    = "/chat.Chat/Ping"
-	Chat_Expand_FullMethodName  = "/chat.Chat/expand"
-	Chat_Shorten_FullMethodName = "/chat.Chat/shorten"
+	Chat_Login_FullMethodName    = "/chat.Chat/login"
+	Chat_UserInfo_FullMethodName = "/chat.Chat/userInfo"
 )
 
 // ChatClient is the client API for Chat service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatClient interface {
-	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
-	Expand(ctx context.Context, in *ExpandReq, opts ...grpc.CallOption) (*ExpandResp, error)
-	Shorten(ctx context.Context, in *ShortenReq, opts ...grpc.CallOption) (*ShortenResp, error)
+	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRsp, error)
+	UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoRsp, error)
 }
 
 type chatClient struct {
@@ -41,27 +39,18 @@ func NewChatClient(cc grpc.ClientConnInterface) ChatClient {
 	return &chatClient{cc}
 }
 
-func (c *chatClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, Chat_Ping_FullMethodName, in, out, opts...)
+func (c *chatClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRsp, error) {
+	out := new(LoginRsp)
+	err := c.cc.Invoke(ctx, Chat_Login_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *chatClient) Expand(ctx context.Context, in *ExpandReq, opts ...grpc.CallOption) (*ExpandResp, error) {
-	out := new(ExpandResp)
-	err := c.cc.Invoke(ctx, Chat_Expand_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *chatClient) Shorten(ctx context.Context, in *ShortenReq, opts ...grpc.CallOption) (*ShortenResp, error) {
-	out := new(ShortenResp)
-	err := c.cc.Invoke(ctx, Chat_Shorten_FullMethodName, in, out, opts...)
+func (c *chatClient) UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoRsp, error) {
+	out := new(UserInfoRsp)
+	err := c.cc.Invoke(ctx, Chat_UserInfo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +61,8 @@ func (c *chatClient) Shorten(ctx context.Context, in *ShortenReq, opts ...grpc.C
 // All implementations must embed UnimplementedChatServer
 // for forward compatibility
 type ChatServer interface {
-	Ping(context.Context, *Request) (*Response, error)
-	Expand(context.Context, *ExpandReq) (*ExpandResp, error)
-	Shorten(context.Context, *ShortenReq) (*ShortenResp, error)
+	Login(context.Context, *LoginReq) (*LoginRsp, error)
+	UserInfo(context.Context, *UserInfoReq) (*UserInfoRsp, error)
 	mustEmbedUnimplementedChatServer()
 }
 
@@ -82,14 +70,11 @@ type ChatServer interface {
 type UnimplementedChatServer struct {
 }
 
-func (UnimplementedChatServer) Ping(context.Context, *Request) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+func (UnimplementedChatServer) Login(context.Context, *LoginReq) (*LoginRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedChatServer) Expand(context.Context, *ExpandReq) (*ExpandResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Expand not implemented")
-}
-func (UnimplementedChatServer) Shorten(context.Context, *ShortenReq) (*ShortenResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Shorten not implemented")
+func (UnimplementedChatServer) UserInfo(context.Context, *UserInfoReq) (*UserInfoRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserInfo not implemented")
 }
 func (UnimplementedChatServer) mustEmbedUnimplementedChatServer() {}
 
@@ -104,56 +89,38 @@ func RegisterChatServer(s grpc.ServiceRegistrar, srv ChatServer) {
 	s.RegisterService(&Chat_ServiceDesc, srv)
 }
 
-func _Chat_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+func _Chat_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServer).Ping(ctx, in)
+		return srv.(ChatServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Chat_Ping_FullMethodName,
+		FullMethod: Chat_Login_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServer).Ping(ctx, req.(*Request))
+		return srv.(ChatServer).Login(ctx, req.(*LoginReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Chat_Expand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExpandReq)
+func _Chat_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserInfoReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServer).Expand(ctx, in)
+		return srv.(ChatServer).UserInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Chat_Expand_FullMethodName,
+		FullMethod: Chat_UserInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServer).Expand(ctx, req.(*ExpandReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Chat_Shorten_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ShortenReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ChatServer).Shorten(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Chat_Shorten_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServer).Shorten(ctx, req.(*ShortenReq))
+		return srv.(ChatServer).UserInfo(ctx, req.(*UserInfoReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -166,16 +133,12 @@ var Chat_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ChatServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Ping",
-			Handler:    _Chat_Ping_Handler,
+			MethodName: "login",
+			Handler:    _Chat_Login_Handler,
 		},
 		{
-			MethodName: "expand",
-			Handler:    _Chat_Expand_Handler,
-		},
-		{
-			MethodName: "shorten",
-			Handler:    _Chat_Shorten_Handler,
+			MethodName: "userInfo",
+			Handler:    _Chat_UserInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -6,16 +6,19 @@ package svc
 
 import (
 	"AiChatPartner/api/api/internal/config"
+	"AiChatPartner/rpc/chat/chatclient"
+
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
-	Config config.Config
-	// Redis  *redis.Redis
+	Config     config.Config
+	ChatClient chatclient.Chat
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
-		// Redis:  redis.MustNewRedis(c.RedisConf),
+		Config:     c,
+		ChatClient: chatclient.NewChat(zrpc.MustNewClient(c.Chat)),
 	}
 }

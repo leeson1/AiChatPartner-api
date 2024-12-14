@@ -20,9 +20,9 @@ type Config struct {
 
 type MySQLConfig struct {
 	// MySQL 配置字段
-	Host     string `yaml:"Host"`
-	Username string `yaml:"Username"`
-	Pass     string `yaml:"Pass"`
+	Host string `yaml:"Host"`
+	User string `yaml:"User"`
+	Pass string `yaml:"Pass"`
 }
 
 type RedisConfig struct {

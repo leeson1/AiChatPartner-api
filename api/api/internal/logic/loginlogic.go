@@ -13,6 +13,7 @@ import (
 	"AiChatPartner/api/api/internal/types"
 	"AiChatPartner/common/mysql"
 	"AiChatPartner/common/redis"
+	"AiChatPartner/rpc/chat/chat"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -50,6 +51,17 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 		now := jwt.TimeFunc().Unix()
 		token, err := getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, req.Username)
 		if err != nil {
+			logx.Error("[LoginLogic] getJwtToken error: ", err, " username: ", req.Username)
+			return nil, err
+		}
+
+		// 交给rpc/chat 服务处理
+		_, err = l.svcCtx.ChatClient.Login(l.ctx, &chat.LoginReq{
+			Username: req.Username,
+			Password: req.Password,
+		})
+		if err != nil {
+			logx.Error("[LoginLogic] rpc.Login error: ", err)
 			return nil, err
 		}
 

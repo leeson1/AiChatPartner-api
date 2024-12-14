@@ -3,34 +3,27 @@ syntax = "proto3";
 package chat;
 option go_package="./chat";
 
-message Request {
-  string ping = 1;
+message loginReq {
+  string username = 1;
+  string password = 2;
 }
 
-message Response {
-  string pong = 1;
+message loginRsp {
+
 }
 
-message expandReq{
-  string shorten = 1;
+message userInfoReq {
+  string uid = 1;
+  string username = 2;
 }
 
-message expandResp{
-  string url = 1;
-}
+message userInfoRsp {
 
-message shortenReq{
-  string url = 1;
-}
-
-message shortenResp{
-  string shorten = 1;
 }
 
 service Chat {
-  rpc Ping(Request) returns(Response);
-  rpc expand(expandReq) returns(expandResp);
-  rpc shorten(shortenReq) returns(shortenResp);
+  rpc login(loginReq) returns(loginRsp);
+  rpc userInfo (userInfoReq) returns(userInfoRsp);
 }
 
 
