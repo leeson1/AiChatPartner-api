@@ -47,7 +47,7 @@ func (l *RegisterLogic) Register(in *chat.RegisterReq) (*chat.RegisterRsp, error
 	// 	}, fmt.Errorf("[RegisterLogic] user already exists. username: %s", in.Username)
 	// }
 
-	_, err := l.svcCtx.DbServer.Read(l.ctx, &db.ReadRequest{
+	userInfo, err := l.svcCtx.DbServer.Read(l.ctx, &db.ReadRequest{
 		TableName: "ac_user",
 		Key:       in.Username,
 		KeyType:   2,
@@ -59,11 +59,18 @@ func (l *RegisterLogic) Register(in *chat.RegisterReq) (*chat.RegisterRsp, error
 		if ok {
 			if sqlx.ErrNotFound.Error() == st.Message() {
 				notFound = true
+			} else {
+				return &chat.RegisterRsp{RetCode: 2}, err
 			}
 		} else {
-			logx.Errorf("[rpc/chat Register] ... get user by username:[%s] error: [%s]", in.Username, err)
+			logx.Errorf("[rpc/chat Register] get user by username:[%s] error: [%s]", in.Username, err)
 			return &chat.RegisterRsp{RetCode: 2}, err
 		}
+	}
+
+	if userInfo.Success {
+		logx.Errorf("[rpc/chat Register] username:[%s] already exists", in.Username)
+		return &chat.RegisterRsp{RetCode: 2}, nil
 	}
 
 	// 2. 不存在，调用db服务写入数据

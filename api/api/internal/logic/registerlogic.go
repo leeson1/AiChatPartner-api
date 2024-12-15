@@ -6,6 +6,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"AiChatPartner/api/api/internal/svc"
 	"AiChatPartner/api/api/internal/types"
@@ -30,7 +31,7 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRsp, err error) {
 
-	_, err = l.svcCtx.ChatClient.Register(l.ctx, &chat.RegisterReq{
+	rsp, err := l.svcCtx.ChatClient.Register(l.ctx, &chat.RegisterReq{
 		Username: req.Username,
 		Password: req.Password,
 	})
@@ -39,9 +40,11 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRs
 		return nil, err
 	}
 
+	if rsp.RetCode != 0 {
+		return &types.RegisterRsp{RetCode: 1}, fmt.Errorf("username:%s already exists", req.Username)
+	}
+
 	logx.Infof("[LoginLogic] register success. username: %s", req.Username)
 
-	return &types.RegisterRsp{
-		RetCode: 0,
-	}, nil
+	return &types.RegisterRsp{RetCode: 0}, nil
 }
