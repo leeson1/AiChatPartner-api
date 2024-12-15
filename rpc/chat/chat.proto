@@ -3,6 +3,12 @@ syntax = "proto3";
 package chat;
 option go_package="./chat";
 
+service Chat {
+  rpc login(loginReq) returns(loginRsp);
+  rpc userInfo (userInfoReq) returns(userInfoRsp);
+  rpc Register (RegisterReq) returns(RegisterRsp);
+}
+
 message loginReq {
   string username = 1;
   string password = 2;
@@ -21,9 +27,13 @@ message userInfoRsp {
 
 }
 
-service Chat {
-  rpc login(loginReq) returns(loginRsp);
-  rpc userInfo (userInfoReq) returns(userInfoRsp);
+message RegisterReq {
+  string username = 1;
+  string password = 2;
+}
+
+message RegisterRsp {
+  int32 retCode = 1;
 }
 
 

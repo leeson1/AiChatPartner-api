@@ -8,7 +8,7 @@ import (
 	"context"
 
 	"AiChatPartner/rpc/db/db"
-	"AiChatPartner/rpc/db/internal/logic"
+	"AiChatPartner/rpc/db/internal/logic/databaseservice"
 	"AiChatPartner/rpc/db/internal/svc"
 )
 
@@ -25,48 +25,48 @@ func NewDatabaseServiceServer(svcCtx *svc.ServiceContext) *DatabaseServiceServer
 
 // 连接管理
 func (s *DatabaseServiceServer) Connect(ctx context.Context, in *db.ConnectRequest) (*db.ConnectResponse, error) {
-	l := logic.NewConnectLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewConnectLogic(ctx, s.svcCtx)
 	return l.Connect(in)
 }
 
 func (s *DatabaseServiceServer) Disconnect(ctx context.Context, in *db.DisconnectRequest) (*db.DisconnectResponse, error) {
-	l := logic.NewDisconnectLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewDisconnectLogic(ctx, s.svcCtx)
 	return l.Disconnect(in)
 }
 
 // CRUD 操作
 func (s *DatabaseServiceServer) Create(ctx context.Context, in *db.CreateRequest) (*db.CreateResponse, error) {
-	l := logic.NewCreateLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewCreateLogic(ctx, s.svcCtx)
 	return l.Create(in)
 }
 
 func (s *DatabaseServiceServer) Read(ctx context.Context, in *db.ReadRequest) (*db.ReadResponse, error) {
-	l := logic.NewReadLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewReadLogic(ctx, s.svcCtx)
 	return l.Read(in)
 }
 
 func (s *DatabaseServiceServer) Update(ctx context.Context, in *db.UpdateRequest) (*db.UpdateResponse, error) {
-	l := logic.NewUpdateLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewUpdateLogic(ctx, s.svcCtx)
 	return l.Update(in)
 }
 
 func (s *DatabaseServiceServer) Delete(ctx context.Context, in *db.DeleteRequest) (*db.DeleteResponse, error) {
-	l := logic.NewDeleteLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewDeleteLogic(ctx, s.svcCtx)
 	return l.Delete(in)
 }
 
 // 事务管理
 func (s *DatabaseServiceServer) BeginTransaction(ctx context.Context, in *db.BeginTransactionRequest) (*db.BeginTransactionResponse, error) {
-	l := logic.NewBeginTransactionLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewBeginTransactionLogic(ctx, s.svcCtx)
 	return l.BeginTransaction(in)
 }
 
 func (s *DatabaseServiceServer) CommitTransaction(ctx context.Context, in *db.CommitTransactionRequest) (*db.CommitTransactionResponse, error) {
-	l := logic.NewCommitTransactionLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewCommitTransactionLogic(ctx, s.svcCtx)
 	return l.CommitTransaction(in)
 }
 
 func (s *DatabaseServiceServer) RollbackTransaction(ctx context.Context, in *db.RollbackTransactionRequest) (*db.RollbackTransactionResponse, error) {
-	l := logic.NewRollbackTransactionLogic(ctx, s.svcCtx)
+	l := databaseservicelogic.NewRollbackTransactionLogic(ctx, s.svcCtx)
 	return l.RollbackTransaction(in)
 }

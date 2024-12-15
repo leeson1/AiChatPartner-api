@@ -1,4 +1,4 @@
-package logic
+package databaseservicelogic
 
 import (
 	"context"
@@ -9,23 +9,22 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type ConnectLogic struct {
+type DisconnectLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewConnectLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ConnectLogic {
-	return &ConnectLogic{
+func NewDisconnectLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DisconnectLogic {
+	return &DisconnectLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-// 连接管理
-func (l *ConnectLogic) Connect(in *db.ConnectRequest) (*db.ConnectResponse, error) {
+func (l *DisconnectLogic) Disconnect(in *db.DisconnectRequest) (*db.DisconnectResponse, error) {
 	// todo: add your logic here and delete this line
 
-	return &db.ConnectResponse{}, nil
+	return &db.DisconnectResponse{}, nil
 }

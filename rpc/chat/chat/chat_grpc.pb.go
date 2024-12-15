@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Chat_Login_FullMethodName    = "/chat.Chat/login"
 	Chat_UserInfo_FullMethodName = "/chat.Chat/userInfo"
+	Chat_Register_FullMethodName = "/chat.Chat/Register"
 )
 
 // ChatClient is the client API for Chat service.
@@ -29,6 +30,7 @@ const (
 type ChatClient interface {
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRsp, error)
 	UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoRsp, error)
+	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRsp, error)
 }
 
 type chatClient struct {
@@ -57,12 +59,22 @@ func (c *chatClient) UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc
 	return out, nil
 }
 
+func (c *chatClient) Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRsp, error) {
+	out := new(RegisterRsp)
+	err := c.cc.Invoke(ctx, Chat_Register_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChatServer is the server API for Chat service.
 // All implementations must embed UnimplementedChatServer
 // for forward compatibility
 type ChatServer interface {
 	Login(context.Context, *LoginReq) (*LoginRsp, error)
 	UserInfo(context.Context, *UserInfoReq) (*UserInfoRsp, error)
+	Register(context.Context, *RegisterReq) (*RegisterRsp, error)
 	mustEmbedUnimplementedChatServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedChatServer) Login(context.Context, *LoginReq) (*LoginRsp, err
 }
 func (UnimplementedChatServer) UserInfo(context.Context, *UserInfoReq) (*UserInfoRsp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserInfo not implemented")
+}
+func (UnimplementedChatServer) Register(context.Context, *RegisterReq) (*RegisterRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedChatServer) mustEmbedUnimplementedChatServer() {}
 
@@ -125,6 +140,24 @@ func _Chat_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Chat_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Chat_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServer).Register(ctx, req.(*RegisterReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Chat_ServiceDesc is the grpc.ServiceDesc for Chat service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var Chat_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "userInfo",
 			Handler:    _Chat_UserInfo_Handler,
+		},
+		{
+			MethodName: "Register",
+			Handler:    _Chat_Register_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

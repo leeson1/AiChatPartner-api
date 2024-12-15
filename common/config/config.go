@@ -14,16 +14,8 @@ import (
 )
 
 type Config struct {
-	MySQLConf string      `yaml:"DataSource"`
 	RedisConf RedisConfig `yaml:"RedisConf"`
 }
-
-// type MySQLConfig struct {
-// 	// MySQL 配置字段
-// 	Host string `yaml:"Host"`
-// 	User string `yaml:"User"`
-// 	Pass string `yaml:"Pass"`
-// }
 
 type RedisConfig struct {
 	// Redis 配置字段

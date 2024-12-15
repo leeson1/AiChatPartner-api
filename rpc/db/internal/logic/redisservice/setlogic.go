@@ -1,4 +1,4 @@
-package logic
+package redisservicelogic
 
 import (
 	"context"
@@ -9,22 +9,22 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type UpdateLogic struct {
+type SetLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewUpdateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateLogic {
-	return &UpdateLogic{
+func NewSetLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SetLogic {
+	return &SetLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *UpdateLogic) Update(in *db.UpdateRequest) (*db.UpdateResponse, error) {
+func (l *SetLogic) Set(in *db.SetRequest) (*db.SetResponse, error) {
 	// todo: add your logic here and delete this line
 
-	return &db.UpdateResponse{}, nil
+	return &db.SetResponse{}, nil
 }

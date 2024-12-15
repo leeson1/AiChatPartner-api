@@ -1,8 +1,8 @@
 /*
  * @Author: Leeson
- * @Date: 2024-12-15 12:31:10
+ * @Date: 2024-12-15 15:01:46
  */
-package logic
+package databaseservicelogic
 
 import (
 	"context"
@@ -47,7 +47,6 @@ func (l *ReadLogic) Read(in *db.ReadRequest) (*db.ReadResponse, error) {
 	} else if in.KeyType == 2 { // 唯一索引 username
 		userInfo, err = l.svcCtx.Model.GetUserByUsername(l.ctx, in.Key)
 		if err != nil {
-			logx.Errorf("[rpc/db Read] get user by username:[%s] error: %s", in.Key, err)
 			return &db.ReadResponse{Success: false, ErrorMessage: err.Error()}, err
 		}
 	}

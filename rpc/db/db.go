@@ -11,7 +11,8 @@ import (
 
 	"AiChatPartner/rpc/db/db"
 	"AiChatPartner/rpc/db/internal/config"
-	"AiChatPartner/rpc/db/internal/server"
+	mysql_server "AiChatPartner/rpc/db/internal/server/databaseservice"
+	redis_server "AiChatPartner/rpc/db/internal/server/redisservice"
 	"AiChatPartner/rpc/db/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
@@ -35,7 +36,8 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		db.RegisterDatabaseServiceServer(grpcServer, server.NewDatabaseServiceServer(ctx))
+		db.RegisterDatabaseServiceServer(grpcServer, mysql_server.NewDatabaseServiceServer(ctx))
+		db.RegisterRedisServiceServer(grpcServer, redis_server.NewRedisServiceServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

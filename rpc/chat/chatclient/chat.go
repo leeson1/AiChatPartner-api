@@ -16,12 +16,15 @@ import (
 type (
 	LoginReq    = chat.LoginReq
 	LoginRsp    = chat.LoginRsp
+	RegisterReq = chat.RegisterReq
+	RegisterRsp = chat.RegisterRsp
 	UserInfoReq = chat.UserInfoReq
 	UserInfoRsp = chat.UserInfoRsp
 
 	Chat interface {
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRsp, error)
 		UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoRsp, error)
+		Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRsp, error)
 	}
 
 	defaultChat struct {
@@ -43,4 +46,9 @@ func (m *defaultChat) Login(ctx context.Context, in *LoginReq, opts ...grpc.Call
 func (m *defaultChat) UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoRsp, error) {
 	client := chat.NewChatClient(m.cli.Conn())
 	return client.UserInfo(ctx, in, opts...)
+}
+
+func (m *defaultChat) Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRsp, error) {
+	client := chat.NewChatClient(m.cli.Conn())
+	return client.Register(ctx, in, opts...)
 }

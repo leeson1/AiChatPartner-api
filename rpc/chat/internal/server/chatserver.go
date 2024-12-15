@@ -32,3 +32,8 @@ func (s *ChatServer) UserInfo(ctx context.Context, in *chat.UserInfoReq) (*chat.
 	l := logic.NewUserInfoLogic(ctx, s.svcCtx)
 	return l.UserInfo(in)
 }
+
+func (s *ChatServer) Register(ctx context.Context, in *chat.RegisterReq) (*chat.RegisterRsp, error) {
+	l := logic.NewRegisterLogic(ctx, s.svcCtx)
+	return l.Register(in)
+}

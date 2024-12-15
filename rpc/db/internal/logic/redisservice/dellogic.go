@@ -1,4 +1,4 @@
-package logic
+package redisservicelogic
 
 import (
 	"context"
@@ -9,22 +9,22 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type DisconnectLogic struct {
+type DelLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewDisconnectLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DisconnectLogic {
-	return &DisconnectLogic{
+func NewDelLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DelLogic {
+	return &DelLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *DisconnectLogic) Disconnect(in *db.DisconnectRequest) (*db.DisconnectResponse, error) {
+func (l *DelLogic) Del(in *db.DelRequest) (*db.DelResponse, error) {
 	// todo: add your logic here and delete this line
 
-	return &db.DisconnectResponse{}, nil
+	return &db.DelResponse{}, nil
 }

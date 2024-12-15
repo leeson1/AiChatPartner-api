@@ -6,13 +6,9 @@ package logic
 
 import (
 	"context"
-	"fmt"
-	"strconv"
 
 	"AiChatPartner/api/api/internal/svc"
 	"AiChatPartner/api/api/internal/types"
-	"AiChatPartner/common/mysql"
-	"AiChatPartner/common/redis"
 	"AiChatPartner/rpc/chat/chat"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -44,55 +40,51 @@ func getJwtToken(secretKey string, iat, seconds int64, payload string) (string, 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error) {
-	// todo: add your logic here and delete this line
 
-	if req.Username == "admin" && req.Password == "admin" {
-		//生成token
-		now := jwt.TimeFunc().Unix()
-		token, err := getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, req.Username)
-		if err != nil {
-			logx.Error("[LoginLogic] getJwtToken error: ", err, " username: ", req.Username)
-			return nil, err
-		}
-
-		// 交给rpc/chat 服务处理
-		_, err = l.svcCtx.ChatClient.Login(l.ctx, &chat.LoginReq{
-			Username: req.Username,
-			Password: req.Password,
-		})
-		if err != nil {
-			logx.Error("[LoginLogic] rpc.Login error: ", err)
-			return nil, err
-		}
-
-		// 获取用户id
-		uid := mysql.GetUidByUserName(req.Username)
-		if uid == -1 {
-			logx.Error("[LoginLogic] get uid error. username: ", req.Username)
-
-			return nil, fmt.Errorf("[LoginLogic] get uid error. username: %s", req.Username)
-		}
-
-		// 插入redis
-		userInfo := redis.UserInfo{
-			Username: req.Username,
-			Uid:      uid,
-			Token:    token,
-		}
-		redisKey := strconv.Itoa(int(uid))
-		exp := int(l.svcCtx.Config.Auth.AccessExpire)
-		err = redis.GetRedisClient().HmsetWithExpire(redisKey, userInfo.ToMap(), exp)
-		if err != nil {
-			logx.Error("[LoginLogic] set redis error: ", err)
-			return nil, err
-		}
-
-		logx.Infof("[LoginLogic] login success. uid:%s token: %s", string(uid), token)
-		return &types.LoginRsp{
-			Token:   token,
-			RetCode: 200,
-		}, nil
+	//生成token
+	now := jwt.TimeFunc().Unix()
+	token, err := getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, req.Username)
+	if err != nil {
+		logx.Error("[LoginLogic] getJwtToken error: ", err, " username: ", req.Username)
+		return nil, err
 	}
 
-	return
+	// 交给rpc/chat 服务处理
+	_, err = l.svcCtx.ChatClient.Login(l.ctx, &chat.LoginReq{
+		Username: req.Username,
+		Password: req.Password,
+	})
+	if err != nil {
+		logx.Error("[LoginLogic] rpc.Login error: ", err)
+		return nil, err
+	}
+
+	// 获取用户id
+	// uid := mysql.GetUidByUserName(req.Username)
+	// if uid == -1 {
+	// 	logx.Error("[LoginLogic] get uid error. username: ", req.Username)
+
+	// 	return nil, fmt.Errorf("[LoginLogic] get uid error. username: %s", req.Username)
+	// }
+
+	// // 插入redis
+	// userInfo := redis.UserInfo{
+	// 	Username: req.Username,
+	// 	Uid:      uid,
+	// 	Token:    token,
+	// }
+	// redisKey := strconv.Itoa(int(uid))
+	// exp := int(l.svcCtx.Config.Auth.AccessExpire)
+	// err = redis.GetRedisClient().HmsetWithExpire(redisKey, userInfo.ToMap(), exp)
+	// if err != nil {
+	// 	logx.Error("[LoginLogic] set redis error: ", err)
+	// 	return nil, err
+	// }
+
+	logx.Infof("[LoginLogic] login success. username:%s token: %s", req.Username, token)
+	return &types.LoginRsp{
+		Token:   token,
+		RetCode: 0,
+	}, nil
+
 }

@@ -409,3 +409,167 @@ var DatabaseService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "db.proto",
 }
+
+const (
+	RedisService_Set_FullMethodName = "/dbserver.RedisService/Set"
+	RedisService_Get_FullMethodName = "/dbserver.RedisService/Get"
+	RedisService_Del_FullMethodName = "/dbserver.RedisService/Del"
+)
+
+// RedisServiceClient is the client API for RedisService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type RedisServiceClient interface {
+	Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*SetResponse, error)
+	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+	Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error)
+}
+
+type redisServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewRedisServiceClient(cc grpc.ClientConnInterface) RedisServiceClient {
+	return &redisServiceClient{cc}
+}
+
+func (c *redisServiceClient) Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*SetResponse, error) {
+	out := new(SetResponse)
+	err := c.cc.Invoke(ctx, RedisService_Set_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *redisServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+	out := new(GetResponse)
+	err := c.cc.Invoke(ctx, RedisService_Get_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *redisServiceClient) Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error) {
+	out := new(DelResponse)
+	err := c.cc.Invoke(ctx, RedisService_Del_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// RedisServiceServer is the server API for RedisService service.
+// All implementations must embed UnimplementedRedisServiceServer
+// for forward compatibility
+type RedisServiceServer interface {
+	Set(context.Context, *SetRequest) (*SetResponse, error)
+	Get(context.Context, *GetRequest) (*GetResponse, error)
+	Del(context.Context, *DelRequest) (*DelResponse, error)
+	mustEmbedUnimplementedRedisServiceServer()
+}
+
+// UnimplementedRedisServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedRedisServiceServer struct {
+}
+
+func (UnimplementedRedisServiceServer) Set(context.Context, *SetRequest) (*SetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Set not implemented")
+}
+func (UnimplementedRedisServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedRedisServiceServer) Del(context.Context, *DelRequest) (*DelResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Del not implemented")
+}
+func (UnimplementedRedisServiceServer) mustEmbedUnimplementedRedisServiceServer() {}
+
+// UnsafeRedisServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RedisServiceServer will
+// result in compilation errors.
+type UnsafeRedisServiceServer interface {
+	mustEmbedUnimplementedRedisServiceServer()
+}
+
+func RegisterRedisServiceServer(s grpc.ServiceRegistrar, srv RedisServiceServer) {
+	s.RegisterService(&RedisService_ServiceDesc, srv)
+}
+
+func _RedisService_Set_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RedisServiceServer).Set(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RedisService_Set_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RedisServiceServer).Set(ctx, req.(*SetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RedisService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RedisServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RedisService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RedisServiceServer).Get(ctx, req.(*GetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RedisService_Del_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RedisServiceServer).Del(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RedisService_Del_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RedisServiceServer).Del(ctx, req.(*DelRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// RedisService_ServiceDesc is the grpc.ServiceDesc for RedisService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var RedisService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "dbserver.RedisService",
+	HandlerType: (*RedisServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Set",
+			Handler:    _RedisService_Set_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _RedisService_Get_Handler,
+		},
+		{
+			MethodName: "Del",
+			Handler:    _RedisService_Del_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "db.proto",
+}
