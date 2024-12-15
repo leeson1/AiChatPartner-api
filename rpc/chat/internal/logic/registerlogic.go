@@ -68,7 +68,7 @@ func (l *RegisterLogic) Register(in *chat.RegisterReq) (*chat.RegisterRsp, error
 		}
 	}
 
-	if userInfo.Success {
+	if err == nil && userInfo.Success {
 		logx.Errorf("[rpc/chat Register] username:[%s] already exists", in.Username)
 		return &chat.RegisterRsp{RetCode: 2}, nil
 	}

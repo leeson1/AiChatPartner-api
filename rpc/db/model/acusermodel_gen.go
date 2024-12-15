@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -20,8 +21,8 @@ import (
 var (
 	acUserFieldNames          = builder.RawFieldNames(&AcUser{})
 	acUserRows                = strings.Join(acUserFieldNames, ",")
-	acUserRowsExpectAutoSet   = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
-	acUserRowsWithPlaceHolder = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
+	acUserRowsExpectAutoSet   = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`", "`created_at`", "`update_at`", "`updated_at`"), ",")
+	acUserRowsWithPlaceHolder = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`",  "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cacheAcUserUinPrefix = "cache:acUser:uin:"
 )
@@ -88,11 +89,17 @@ func (m *defaultAcUserModel) FindOne(ctx context.Context, uin uint64) (*AcUser, 
 }
 
 func (m *defaultAcUserModel) Insert(ctx context.Context, data *AcUser) (sql.Result, error) {
-	acUserUinKey := fmt.Sprintf("%s%v", cacheAcUserUinPrefix, data.Uin)
+
+	// 使用当前时间
+	data.CreateTime = sql.NullTime{Time: time.Now(), Valid: true} 
+	data.UpdateTime = sql.NullTime{Time: time.Now(), Valid: true} 
+	data.Version = sql.NullInt64{Int64: 1, Valid: true}
+
+	// acUserUinKey := fmt.Sprintf("%s%v", cacheAcUserUinPrefix, data.Uin)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, acUserRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Role, data.Username, data.Password, data.Email, data.Nickname, data.Sex, data.Version)
-	}, acUserUinKey)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, acUserRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Role, data.Username, data.Password, data.Email, data.Nickname, data.Sex, data.CreateTime, data.UpdateTime, data.Version)
+	})
 	return ret, err
 }
 
