@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package dbserver;
+option go_package="./db";
+
+// 服务定义
+service DatabaseService {
+    // 连接管理
+    rpc Connect (ConnectRequest) returns (ConnectResponse);
+    rpc Disconnect (DisconnectRequest) returns (DisconnectResponse);
+
+    // CRUD 操作
+    rpc Create (CreateRequest) returns (CreateResponse);
+    rpc Read (ReadRequest) returns (ReadResponse);
+    rpc Update (UpdateRequest) returns (UpdateResponse);
+    rpc Delete (DeleteRequest) returns (DeleteResponse);
+
+    // 事务管理
+    rpc BeginTransaction (BeginTransactionRequest) returns (BeginTransactionResponse);
+    rpc CommitTransaction (CommitTransactionRequest) returns (CommitTransactionResponse);
+    rpc RollbackTransaction (RollbackTransactionRequest) returns (RollbackTransactionResponse);
+}
+
+// 连接管理请求消息
+message ConnectRequest {
+    string database_name = 1;
+    string user = 2;
+    string password = 3;
+}
+
+message ConnectResponse {
+    bool success = 1;
+    string connection_id = 2; // 可选，如果连接需要被跟踪
+    string error_message = 3; // 可选，用于错误报告
+}
+
+// 断开连接请求消息
+message DisconnectRequest {
+    string connection_id = 1; // 如果连接需要被跟踪
+}
+
+message DisconnectResponse {
+    bool success = 1;
+    string error_message = 2; // 可选，用于错误报告
+}
+
+// CRUD 操作请求和响应消息（这里以通用的方式定义，实际应用中可能需要更具体的字段）
+message CreateRequest {
+    string table_name = 1;
+    map<string, string> data = 2; // 键是列名，值是数据
+}
+
+message CreateResponse {
+    bool success = 1;
+    string created_id = 2; // 如果适用，比如主键
+    string error_message = 3; // 可选，用于错误报告
+}
+
+message ReadRequest {
+    string table_name = 1;
+    string key = 2; // 主键或其他唯一标识符
+    int32 key_type = 3; // 1: 主键，2: 其他唯一标识符
+}
+
+message ReadResponse {
+    bool success = 1;
+    map<string, string> data = 2; // 键是列名，值是数据
+    string error_message = 3; // 可选，用于错误报告
+}
+
+message UpdateRequest {
+    string table_name = 1;
+    string id = 2; // 主键或其他唯一标识符
+    map<string, string> data = 3; // 要更新的列和数据
+}
+
+message UpdateResponse {
+    bool success = 1;
+    string error_message = 2; // 可选，用于错误报告
+}
+
+message DeleteRequest {
+    string table_name = 1;
+    string id = 2; // 主键或其他唯一标识符
+}
+
+message DeleteResponse {
+    bool success = 1;
+    string error_message = 2; // 可选，用于错误报告
+}
+
+// 事务管理请求和响应消息
+message BeginTransactionRequest {
+    // 可以包含连接信息或其他参数，这里简化
+}
+
+message BeginTransactionResponse {
+    bool success = 1;
+    string transaction_id = 2; // 事务的唯一标识符
+    string error_message = 3; // 可选，用于错误报告
+}
+
+message CommitTransactionRequest {
+    string transaction_id = 1;
+}
+
+message CommitTransactionResponse {
+    bool success = 1;
+    string error_message = 2; // 可选，用于错误报告
+}
+
+message RollbackTransactionRequest {
+    string transaction_id = 1;
+}
+
+message RollbackTransactionResponse {
+    bool success = 1;
+    string error_message = 2; // 可选，用于错误报告
+}

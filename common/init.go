@@ -15,7 +15,7 @@ func InitServices(configPath string) error {
 		return err
 	}
 
-	// if err := mysql.InitMySQL(conf.MySQL); err != nil {
+	// if err := mysql.InitMySQL(conf); err != nil {
 	// 	return err
 	// }
 	if err := redis.InitRedis(conf); err != nil {

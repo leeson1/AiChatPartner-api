@@ -5,17 +5,21 @@
 package middle
 
 import (
-	"AiChatPartner/middle/filter"
 	"net/http"
+
+	"github.com/rs/cors"
 )
 
 func Middleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// 在请求处理之前执行的逻辑
-		if err := filter.FilterToken(w, r); err != nil {
-			return
+
+		corsConfig := cors.Default()
+		corsMiddleware := func(next http.Handler) http.Handler {
+			return corsConfig.Handler(next)
 		}
 
+		corsMiddleware(next).ServeHTTP(w, r)
 		// 调用下一个处理器
 		next(w, r)
 

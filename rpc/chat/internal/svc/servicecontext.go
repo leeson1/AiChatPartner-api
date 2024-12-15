@@ -6,19 +6,19 @@ package svc
 
 import (
 	"AiChatPartner/rpc/chat/internal/config"
-	"AiChatPartner/rpc/chat/model"
+	"AiChatPartner/rpc/db/databaseservice"
 
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
-	Config config.Config
-	Model  model.AcUserModel
+	Config   config.Config
+	DbServer databaseservice.DatabaseService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
-		Model:  model.NewAcUserModel(sqlx.NewMysql(c.DataSource), c.Cache),
+		Config:   c,
+		DbServer: databaseservice.NewDatabaseService(zrpc.MustNewClient(c.Dbserver)),
 	}
 }

@@ -1,20 +1,15 @@
-Name: chat.rpc
-ListenOn: 0.0.0.0:8080
+Name: db.rpc
+ListenOn: 0.0.0.0:8083
 Etcd:
   Hosts:
   - 127.0.0.1:2379
-  Key: chat.rpc
-DbServer:
-  Etcd:
-    Hosts:
-    - 0.0.0.0:2379
-    Key: db.rpc
+  Key: db.rpc
 
 Log:
-  ServiceName:  "chat-server"
+  ServiceName:  "db-server"
   Mode: "file"
   Encoding: "plain"
-  Path: "/logs/AiChatPartner/rpc/chat-server"
+  Path: "/logs/AiChatPartner/rpc/db-server"
   Level: "debug"
   MaxContentLength: 1024
   Stat: false

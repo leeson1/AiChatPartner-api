@@ -1,6 +1,6 @@
 /*
  * @Author: Leeson
- * @Date: 2024-11-24 00:37:56
+ * @Date: 2024-12-15 12:31:10
  */
 package config
 
@@ -11,7 +11,6 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	Dbserver   zrpc.RpcClientConf
 	DataSource string
 	Table      string
 	Cache      cache.CacheConf

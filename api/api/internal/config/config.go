@@ -11,8 +11,9 @@ import (
 
 type Config struct {
 	rest.RestConf
-	Chat zrpc.RpcClientConf
-	Auth struct {
+	Chat     zrpc.RpcClientConf
+	Dbserver zrpc.RpcClientConf
+	Auth     struct {
 		AccessSecret string
 		AccessExpire int64
 	}

@@ -44,7 +44,6 @@ func InitRedis(c *config.Config) error {
 	rc.Tls = c.RedisConf.Tls
 	rc.Type = c.RedisConf.Type
 	logx.Info("host:", rc.Host)
-	//...
 	return nil
 }
 
