@@ -7,6 +7,8 @@ package logic
 import (
 	"context"
 
+	"github.com/zeromicro/x/errors"
+
 	"AiChatPartner/api/api/internal/svc"
 	"AiChatPartner/api/api/internal/types"
 	"AiChatPartner/rpc/chat/chat"
@@ -41,12 +43,14 @@ func getJwtToken(secretKey string, iat, seconds int64, payload string) (string, 
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error) {
 
+	// TODO: 已经登录，直接返回token
+
 	//生成token
 	now := jwt.TimeFunc().Unix()
 	token, err := getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, req.Username)
 	if err != nil {
 		logx.Error("[LoginLogic] getJwtToken error: ", err, " username: ", req.Username)
-		return nil, err
+		return nil, errors.New(1002, "token error")
 	}
 
 	// 交给rpc/chat 服务处理
@@ -56,30 +60,10 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 	})
 	if err != nil {
 		logx.Error("[LoginLogic] rpc.Login error: ", err)
-		return nil, err
+		return nil, errors.New(1001, "login failed")
 	}
 
-	// 获取用户id
-	// uid := mysql.GetUidByUserName(req.Username)
-	// if uid == -1 {
-	// 	logx.Error("[LoginLogic] get uid error. username: ", req.Username)
-
-	// 	return nil, fmt.Errorf("[LoginLogic] get uid error. username: %s", req.Username)
-	// }
-
-	// // 插入redis
-	// userInfo := redis.UserInfo{
-	// 	Username: req.Username,
-	// 	Uid:      uid,
-	// 	Token:    token,
-	// }
-	// redisKey := strconv.Itoa(int(uid))
-	// exp := int(l.svcCtx.Config.Auth.AccessExpire)
-	// err = redis.GetRedisClient().HmsetWithExpire(redisKey, userInfo.ToMap(), exp)
-	// if err != nil {
-	// 	logx.Error("[LoginLogic] set redis error: ", err)
-	// 	return nil, err
-	// }
+	// 把token 插入redis
 
 	logx.Infof("[LoginLogic] login success. username:%s token: %s", req.Username, token)
 	return &types.LoginRsp{
