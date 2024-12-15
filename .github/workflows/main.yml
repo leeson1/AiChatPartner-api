@@ -13,8 +13,9 @@ jobs:
     - name: Install Git Secrets
       run: |
         sudo apt-get update
-        sudo apt-get install -y ruby-full
-        gem install git_secrets
+        git clone https://github.com/awslabs/git-secrets.git
+        cd git-secrets
+        sudo make install
 
     - name: Initialize Git Secrets
       run: git secrets --install
