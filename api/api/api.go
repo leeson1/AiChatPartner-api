@@ -32,7 +32,7 @@ func main() {
 	logx.MustSetup(c.Log)
 	logx.AddWriter(logx.NewWriter(os.Stdout))
 
-	server := rest.MustNewServer(c.RestConf)
+	server := rest.MustNewServer(c.RestConf, rest.WithCorsHeaders("loginHandler", "userInfoHandler"))
 	server.Use(middle.Middleware)
 	defer server.Stop()
 

@@ -1,22 +1,8 @@
+/*
+* @Author: Leeson
+* @Date: 2024-12-12 23:35:59
+*/
 syntax = "v1"
-
-type LoginReq {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type LoginRsp {
-	RetCode int32 `json:"retCode"`
-	Token string `json:"token"`
-}
-
-type UserInfoReq {
-	ID string `json:"id"`
-}
-
-type UserInfoRsp {
-	Name string `json:"name"`
-}
 
 @server (
 	jwt: Auth
@@ -32,5 +18,35 @@ service api-api {
 service api-api {
 	@handler login
 	post /login (LoginReq) returns (LoginRsp)
+
+	@handler register
+	post /register (RegisterReq) returns (RegisterRsp)
+}
+
+type RegisterReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type RegisterRsp {
+	RetCode int32 `json:"retCode"`
+}
+
+type LoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginRsp {
+	RetCode int32  `json:"retCode"`
+	Token   string `json:"token"`
+}
+
+type UserInfoReq {
+	Username string `json:"username"`
+}
+
+type UserInfoRsp {
+	Name string `json:"name"`
 }
 

@@ -4,8 +4,14 @@ Port: 8081
 Chat:
   Etcd:
     Hosts:
-    - 127.0.0.1:2379
+    - 0.0.0.0:2379
     Key: chat.rpc
+DbServer:
+  Etcd:
+    Hosts:
+    - 0.0.0.0:2379
+    Key: db.rpc
+
 Log:
   ServiceName:  "api-server"
   Mode: "file"

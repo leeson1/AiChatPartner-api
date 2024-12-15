@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -20,8 +21,8 @@ import (
 var (
 	acUserFieldNames          = builder.RawFieldNames(&AcUser{})
 	acUserRows                = strings.Join(acUserFieldNames, ",")
-	acUserRowsExpectAutoSet   = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
-	acUserRowsWithPlaceHolder = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
+	acUserRowsExpectAutoSet   = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`", "`created_at`", "`update_at`", "`updated_at`"), ",")
+	acUserRowsWithPlaceHolder = strings.Join(stringx.Remove(acUserFieldNames, "`uin`", "`create_at`",  "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cacheAcUserUinPrefix = "cache:acUser:uin:"
 )
@@ -32,6 +33,7 @@ type (
 		FindOne(ctx context.Context, uin uint64) (*AcUser, error)
 		Update(ctx context.Context, data *AcUser) error
 		Delete(ctx context.Context, uin uint64) error
+		GetUserByUsername(ctx context.Context, username string) (*AcUser, error) 
 	}
 
 	defaultAcUserModel struct {
@@ -87,11 +89,17 @@ func (m *defaultAcUserModel) FindOne(ctx context.Context, uin uint64) (*AcUser, 
 }
 
 func (m *defaultAcUserModel) Insert(ctx context.Context, data *AcUser) (sql.Result, error) {
-	acUserUinKey := fmt.Sprintf("%s%v", cacheAcUserUinPrefix, data.Uin)
+
+	// 使用当前时间
+	data.CreateTime = sql.NullTime{Time: time.Now(), Valid: true} 
+	data.UpdateTime = sql.NullTime{Time: time.Now(), Valid: true} 
+	data.Version = sql.NullInt64{Int64: 1, Valid: true}
+
+	// acUserUinKey := fmt.Sprintf("%s%v", cacheAcUserUinPrefix, data.Uin)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, acUserRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Role, data.Username, data.Password, data.Email, data.Nickname, data.Sex, data.Version)
-	}, acUserUinKey)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, acUserRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Role, data.Username, data.Password, data.Email, data.Nickname, data.Sex, data.CreateTime, data.UpdateTime, data.Version)
+	})
 	return ret, err
 }
 
@@ -115,4 +123,21 @@ func (m *defaultAcUserModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn
 
 func (m *defaultAcUserModel) tableName() string {
 	return m.table
+}
+
+func (m *defaultAcUserModel) GetUserByUsername(ctx context.Context, username string) (*AcUser, error) {
+	var resp AcUser
+	err := m.QueryRowCtx(ctx, &resp, username, func (ctx context.Context, conn  sqlx.SqlConn, v any)  error {
+		query := fmt.Sprintf("select %s from %s where `username` = ? limit 1", acUserRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, username)
+	})
+
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }

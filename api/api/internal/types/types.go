@@ -9,12 +9,21 @@ type LoginReq struct {
 }
 
 type LoginRsp struct {
+	RetCode int32  `json:"retCode"`
+	Token   string `json:"token"`
+}
+
+type RegisterReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type RegisterRsp struct {
 	RetCode int32 `json:"retCode"`
-	Token string `json:"token"`
 }
 
 type UserInfoReq struct {
-	ID string `json:"id"`
+	Username string `json:"username"`
 }
 
 type UserInfoRsp struct {

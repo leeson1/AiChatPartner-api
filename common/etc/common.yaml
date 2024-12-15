@@ -1,7 +1,3 @@
-MySQLConf:
-  Host: "0.0.0.0:3306"
-  Username: "user"
-  Pass: "pass"
 
 RedisConf:
   Host: "0.0.0.0:8090"
