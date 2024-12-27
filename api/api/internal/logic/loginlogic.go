@@ -45,6 +45,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 
 	// TODO: 已经登录，直接返回token
 
+	// TODO: 丢给rpc/chat 服务处理
 	//生成token
 	now := jwt.TimeFunc().Unix()
 	token, err := getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, req.Username)
@@ -63,7 +64,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 		return nil, errors.New(1001, "login failed")
 	}
 
-	// 把token 插入redis
+	// TODO: 把token 插入redis
 
 	logx.Infof("[LoginLogic] login success. username:%s token: %s", req.Username, token)
 	return &types.LoginRsp{

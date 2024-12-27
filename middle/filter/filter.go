@@ -15,17 +15,17 @@ type LoginReq struct {
 
 func FilterToken(w http.ResponseWriter, r *http.Request) error {
 
-	// 这里想写一个过滤器，如果请求没有携带 token，就返回 401
+	// 这里写一个过滤器，如果请求没有携带 token，就返回 401
 	if !needCheckToken(r) {
 		return nil
 	}
 
 	// 如果过滤请求中是否有token
-	token := r.Header.Get("Authorization")
-	if token == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		return nil
-	}
+	// token := r.Header.Get("Authorization")
+	// if token == "" {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	return nil
+	// }
 
 	// 读取请求体
 	// body, err := io.ReadAll(r.Body)

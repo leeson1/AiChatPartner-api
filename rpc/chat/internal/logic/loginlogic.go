@@ -49,5 +49,5 @@ func (l *LoginLogic) Login(in *chat.LoginReq) (*chat.LoginRsp, error) {
 
 	logx.Info("[rpc/chat Login] login success. user: ", in.Username)
 
-	return &chat.LoginRsp{}, nil
+	return &chat.LoginRsp{RetCode: 0}, nil
 }
