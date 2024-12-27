@@ -166,13 +166,13 @@ func (s *Server) WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			KeyType:   2,
 		})
 		if err != nil {
-			logx.Error("[WebsocketHandler] get user by username:[%s] error: %s", username, err)
+			logx.Errorf("[WebsocketHandler] get user by username:[%s] error: %s", username, err)
 			return
 		}
 		sUin := dbrsp.Data["uin"]
 		uin, err := strconv.Atoi(sUin)
 		if uin == -1 {
-			logx.Error("[WebsocketHandler] get uin error. username:", username, " err:", err)
+			logx.Errorf("[WebsocketHandler] get uin error. username:[%s] error:[%s]", username, err)
 			return
 		}
 		userId := UserID(uin)

@@ -12,7 +12,6 @@ import (
 	"AiChatPartner/api/api/internal/config"
 	"AiChatPartner/api/api/internal/handler"
 	"AiChatPartner/api/api/internal/svc"
-	"AiChatPartner/common"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -37,10 +36,6 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
-
-	if err := common.InitServices("../../common/etc/common.yaml"); err != nil {
-		logx.Field("failed to initialize services: %v", err)
-	}
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
