@@ -36,8 +36,6 @@ func (l *LoginLogic) Login(in *chat.LoginReq) (*chat.LoginRsp, error) {
 		Key:       in.Username,
 		KeyType:   2,
 	})
-	// user, err := l.svcCtx.Model.GetUserByUsername(l.ctx, in.Username)
-	// user, err := mysql.GetMysqlClient().GetUserByUsername(l.ctx, in.Username)
 	if err != nil {
 		return nil, fmt.Errorf("[rpc/chat Login] get user by username:[%s] error: %s", in.Username, err)
 	}

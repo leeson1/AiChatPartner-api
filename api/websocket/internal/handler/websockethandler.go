@@ -1,14 +1,14 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
 
 	"AiChatPartner/api/websocket/internal/svc"
-	"AiChatPartner/common/mysql"
-	"AiChatPartner/common/redis"
+	"AiChatPartner/rpc/db/db"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
@@ -73,8 +73,8 @@ func (cm *ConnectionManager) SendMessage(userId UserID) error {
 			if !ok {
 				return nil
 			}
-			for uid, s := range cm.connections {
-				if uid == userId {
+			for uin, s := range cm.connections {
+				if uin == userId {
 					continue
 				}
 				err := cm.connections[s.ID].WsConn.WriteMessage(1, []byte(message))
@@ -160,25 +160,35 @@ func (s *Server) WebsocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 
 		// 获取uid
 		username := r.URL.Query().Get("username")
-		uid := mysql.GetUidByUserName(username)
-		if uid == -1 {
-			logx.Error("[WebsocketHandler] get uid error. username:", username)
+		dbrsp, err := s.svc.DbServer.Read(context.Background(), &db.ReadRequest{
+			TableName: "ac_user",
+			Key:       username,
+			KeyType:   2,
+		})
+		if err != nil {
+			logx.Error("[WebsocketHandler] get user by username:[%s] error: %s", username, err)
 			return
 		}
-		userId := UserID(uid)
-		userIdStr := strconv.FormatUint(uint64(userId), 10)
+		sUin := dbrsp.Data["uin"]
+		uin, err := strconv.Atoi(sUin)
+		if uin == -1 {
+			logx.Error("[WebsocketHandler] get uin error. username:", username, " err:", err)
+			return
+		}
+		userId := UserID(uin)
+		// userIdStr := strconv.FormatUint(uint64(userId), 10)
 
-		// 检查token
-		token, err := redis.GetRedisClient().Hget(userIdStr, "token")
-		if err != nil {
-			logx.Errorf("[WebsocketHandler] redis get token error. key:[%s] err:[%s]", userIdStr, err)
-			return
-		}
-		_, err = parseJwtToken(token, s.svc.Config.Auth.AccessSecret)
-		if err != nil {
-			logx.Errorf("[WebsocketHandler] parse token:%s error:%s ", token, err)
-			return
-		}
+		// TODO: 检查token
+		// token, err := redis.GetRedisClient().Hget(userIdStr, "token")
+		// if err != nil {
+		// 	logx.Errorf("[WebsocketHandler] redis get token error. key:[%s] err:[%s]", userIdStr, err)
+		// 	return
+		// }
+		// _, err = parseJwtToken(token, s.svc.Config.Auth.AccessSecret)
+		// if err != nil {
+		// 	logx.Errorf("[WebsocketHandler] parse token:%s error:%s ", token, err)
+		// 	return
+		// }
 
 		// 升级为websocket
 		conn, err := upgrade(w, r, svcCtx)

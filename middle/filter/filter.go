@@ -73,25 +73,9 @@ func FilterToken(w http.ResponseWriter, r *http.Request) error {
 	// 	logx.Info("[FilterToken] uin: ", uid)
 	// }
 
-	// // 这里想写一个过滤器，如果请求没有携带 token，就返回 401
-	// token := r.Header.Get("Authorization")
-	// if token == "" {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return nil
-	// }
-
-	// 同时还需要拿这个token去查一下redis，看看是否存在，如果存在就续期
-	// if !redis.Exist(token) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	return nil
 }
 
 func needCheckToken(r *http.Request) bool {
-	if r.URL.Path == "/login" {
-		return false
-	}
-	return true
+	return r.URL.Path != "/login"
 }

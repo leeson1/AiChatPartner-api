@@ -20,11 +20,3 @@ Log:
   Stat: false
   KeepDays: 7
   Compress: true
-
-DataSource: root:lee123mysql456@tcp(0.0.0.0:3306)/ai_chat_partner?charset=utf8mb4&parseTime=True&loc=Local
-Table: ac_user
-Cache:
-  - Host: 0.0.0.0:8090
-    Pass: "leesonredis"
-    Type: "node"
-    Tls : false
