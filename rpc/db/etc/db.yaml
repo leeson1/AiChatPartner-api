@@ -18,7 +18,7 @@ Log:
 
 DataSource: root:lee123mysql456@tcp(0.0.0.0:3306)/ai_chat_partner?charset=utf8mb4&parseTime=True&loc=Local
 RedisConfig:
-  Host: 0.0.0.0:6379
+  Host: 0.0.0.0:8090
   Pass: ""
   Type: "node"
   Tls : false

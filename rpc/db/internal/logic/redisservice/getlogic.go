@@ -34,7 +34,7 @@ func (l *GetLogic) Get(in *db.GetRequest) (*db.GetResponse, error) {
 		return &db.GetResponse{
 			Success:      false,
 			ErrorMessage: err.Error(),
-		}, nil
+		}, err
 	}
 
 	return &db.GetResponse{
