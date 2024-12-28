@@ -8,17 +8,20 @@ import (
 	"AiChatPartner/rpc/db/internal/config"
 	"AiChatPartner/rpc/db/model"
 
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 type ServiceContext struct {
-	Config config.Config
-	Model  model.AcUserModel
+	Config      config.Config
+	Model       model.AcUserModel
+	RedisClient *redis.Redis
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
-		Model:  model.NewAcUserModel(sqlx.NewMysql(c.DataSource), c.Cache),
+		Config:      c,
+		Model:       model.NewAcUserModel(sqlx.NewMysql(c.DataSource)),
+		RedisClient: redis.MustNewRedis(c.RedisConfig),
 	}
 }

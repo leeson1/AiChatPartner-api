@@ -24,7 +24,14 @@ func NewSetLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SetLogic {
 }
 
 func (l *SetLogic) Set(in *db.SetRequest) (*db.SetResponse, error) {
-	// todo: add your logic here and delete this line
 
-	return &db.SetResponse{}, nil
+	err := l.svcCtx.RedisClient.SetCtx(l.ctx, in.Key, in.Value)
+	if err != nil {
+		return &db.SetResponse{
+			Success:      false,
+			ErrorMessage: err.Error(),
+		}, nil
+	}
+
+	return &db.SetResponse{Success: true}, nil
 }
