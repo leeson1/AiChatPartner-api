@@ -45,7 +45,7 @@ func (l *ReadLogic) Read(in *db.ReadRequest) (*db.ReadResponse, error) {
 		}
 
 	} else if in.KeyType == 2 { // 唯一索引 username
-		userInfo, err = l.svcCtx.Model.GetUserByUsername(l.ctx, in.Key)
+		userInfo, err = l.svcCtx.Model.FindOneByUserName(l.ctx, in.Key)
 		if err != nil {
 			return &db.ReadResponse{Success: false, ErrorMessage: err.Error()}, err
 		}

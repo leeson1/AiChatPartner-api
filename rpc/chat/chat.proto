@@ -15,7 +15,7 @@ message loginReq {
 }
 
 message loginRsp {
-
+  int32 retCode = 1;
 }
 
 message userInfoReq {

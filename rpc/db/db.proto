@@ -37,7 +37,7 @@ message ConnectRequest {
 message ConnectResponse {
     bool success = 1;
     string connection_id = 2; // 可选，如果连接需要被跟踪
-    string error_message = 3; // 可选，用于错误报告
+    string error_message = 3;
 }
 
 // 断开连接请求消息
@@ -47,7 +47,7 @@ message DisconnectRequest {
 
 message DisconnectResponse {
     bool success = 1;
-    string error_message = 2; // 可选，用于错误报告
+    string error_message = 2; 
 }
 
 // CRUD 操作请求和响应消息（这里以通用的方式定义，实际应用中可能需要更具体的字段）
@@ -59,7 +59,7 @@ message CreateRequest {
 message CreateResponse {
     bool success = 1;
     string created_id = 2; // 如果适用，比如主键
-    string error_message = 3; // 可选，用于错误报告
+    string error_message = 3; 
 }
 
 message ReadRequest {
@@ -71,7 +71,7 @@ message ReadRequest {
 message ReadResponse {
     bool success = 1;
     map<string, string> data = 2; // 键是列名，值是数据
-    string error_message = 3; // 可选，用于错误报告
+    string error_message = 3; 
 }
 
 message UpdateRequest {
@@ -82,7 +82,7 @@ message UpdateRequest {
 
 message UpdateResponse {
     bool success = 1;
-    string error_message = 2; // 可选，用于错误报告
+    string error_message = 2; 
 }
 
 message DeleteRequest {
@@ -92,7 +92,7 @@ message DeleteRequest {
 
 message DeleteResponse {
     bool success = 1;
-    string error_message = 2; // 可选，用于错误报告
+    string error_message = 2; 
 }
 
 // 事务管理请求和响应消息
@@ -103,7 +103,7 @@ message BeginTransactionRequest {
 message BeginTransactionResponse {
     bool success = 1;
     string transaction_id = 2; // 事务的唯一标识符
-    string error_message = 3; // 可选，用于错误报告
+    string error_message = 3; 
 }
 
 message CommitTransactionRequest {
@@ -112,7 +112,7 @@ message CommitTransactionRequest {
 
 message CommitTransactionResponse {
     bool success = 1;
-    string error_message = 2; // 可选，用于错误报告
+    string error_message = 2; 
 }
 
 message RollbackTransactionRequest {
@@ -121,7 +121,7 @@ message RollbackTransactionRequest {
 
 message RollbackTransactionResponse {
     bool success = 1;
-    string error_message = 2; // 可选，用于错误报告
+    string error_message = 2; 
 }
 
 // Redis 操作请求和响应消息
@@ -132,7 +132,7 @@ message SetRequest {
 
 message SetResponse {
     bool success = 1;
-    string error_message = 2; // 可选，用于错误报告
+    string error_message = 2; 
 }
 
 message GetRequest {
@@ -142,7 +142,7 @@ message GetRequest {
 message GetResponse {
     bool success = 1;
     string value = 2;
-    string error_message = 3; // 可选，用于错误报告
+    string error_message = 3; 
 }
 
 message DelRequest {
@@ -151,5 +151,5 @@ message DelRequest {
 
 message DelResponse {
     bool success = 1;
-    string error_message = 2; // 可选，用于错误报告
+    string error_message = 2; 
 }

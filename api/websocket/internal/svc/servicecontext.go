@@ -6,14 +6,19 @@ package svc
 
 import (
 	"AiChatPartner/api/websocket/internal/config"
+	"AiChatPartner/rpc/db/client/databaseservice"
+
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
-	Config config.Config
+	Config   config.Config
+	DbServer databaseservice.DatabaseService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
+		Config:   c,
+		DbServer: databaseservice.NewDatabaseService(zrpc.MustNewClient(c.Dbserver)),
 	}
 }

@@ -12,7 +12,6 @@ import (
 	"AiChatPartner/api/websocket/internal/config"
 	"AiChatPartner/api/websocket/internal/handler"
 	"AiChatPartner/api/websocket/internal/svc"
-	"AiChatPartner/common"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -30,10 +29,6 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 	logx.MustSetup(c.Log)
 	logx.AddWriter(logx.NewWriter(os.Stdout))
-
-	if err := common.InitServices("../../common/etc/common.yaml"); err != nil {
-		logx.Field("failed to initialize services: %v", err)
-	}
 
 	s := rest.MustNewServer(c.RestConf)
 	defer s.Stop()
