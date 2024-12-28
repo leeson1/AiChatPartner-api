@@ -6,7 +6,7 @@ package svc
 
 import (
 	"AiChatPartner/api/websocket/internal/config"
-	"AiChatPartner/rpc/db/databaseservice"
+	"AiChatPartner/rpc/db/client/databaseservice"
 
 	"github.com/zeromicro/go-zero/zrpc"
 )

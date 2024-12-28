@@ -6,6 +6,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"AiChatPartner/rpc/chat/chat"
@@ -31,6 +32,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 func (l *LoginLogic) Login(in *chat.LoginReq) (*chat.LoginRsp, error) {
 
+	// 查db
 	dbrsp, err := l.svcCtx.DbServer.Read(l.ctx, &db.ReadRequest{
 		TableName: "ac_user",
 		Key:       in.Username,
@@ -44,6 +46,16 @@ func (l *LoginLogic) Login(in *chat.LoginReq) (*chat.LoginRsp, error) {
 	if in.Password != pass {
 		return nil, fmt.Errorf("[rpc/chat Login] user:[%s] password error. ", in.Username)
 	}
+
+	// 插入redis
+	jsonData, err := json.Marshal(dbrsp.Data)
+	if err != nil {
+		return &chat.LoginRsp{RetCode: 1}, fmt.Errorf("[rpc/chat Login] Error marshalling map: %s", err)
+	}
+	l.svcCtx.RdsServer.Set(l.ctx, &db.SetRequest{
+		Key:   in.Username,
+		Value: string(jsonData),
+	})
 
 	logx.Info("[rpc/chat Login] login success. user: ", in.Username)
 
