@@ -16,6 +16,7 @@ message loginReq {
 
 message loginRsp {
   int32 retCode = 1;
+  string data = 2;
 }
 
 message userInfoReq {

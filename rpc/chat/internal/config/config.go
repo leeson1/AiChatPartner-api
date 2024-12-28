@@ -11,4 +11,8 @@ import (
 type Config struct {
 	zrpc.RpcServerConf
 	Dbserver zrpc.RpcClientConf
+	AuthConf struct {
+		AccessSecret string
+		AccessExpire int64
+	}
 }

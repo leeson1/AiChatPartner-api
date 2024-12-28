@@ -6,6 +6,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/zeromicro/x/errors"
 
@@ -14,7 +15,6 @@ import (
 	"AiChatPartner/rpc/chat/chat"
 	"AiChatPartner/rpc/db/db"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -32,37 +32,27 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 	}
 }
 
-func getJwtToken(secretKey string, iat, seconds int64, payload string) (string, error) {
-	claims := make(jwt.MapClaims)
-	claims["exp"] = iat + seconds
-	claims["iat"] = iat
-	claims["payload"] = payload
-	token := jwt.New(jwt.SigningMethodHS256)
-	token.Claims = claims
-	return token.SignedString([]byte(secretKey))
-}
-
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error) {
 
-	//生成token
-	now := jwt.TimeFunc().Unix()
-	token, err := getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, req.Username)
-	if err != nil {
-		logx.Error("[LoginLogic] getJwtToken error: ", err, " username: ", req.Username)
-		return nil, errors.New(1002, "token error")
-	}
-
 	// redis 有token，直接返回
-	_, err = l.svcCtx.RdsServer.Get(l.ctx, &db.GetRequest{Key: req.Username})
+	rdsRsp, err := l.svcCtx.RdsServer.Get(l.ctx, &db.GetRequest{Key: req.Username})
 	if err == nil {
+		jsonData := []byte(rdsRsp.Value)
+		var data map[string]interface{}
+		err = json.Unmarshal(jsonData, &data)
+		if err != nil {
+			logx.Error("[LoginLogic] json.Unmarshal error: ", err)
+			return nil, errors.New(1003, "json.Unmarshal error")
+		}
+
 		return &types.LoginRsp{
-			Token:   token,
+			Token:   data["token"].(string),
 			RetCode: 0,
 		}, nil
 	}
 
-	// 交给rpc/chat 服务处理
-	_, err = l.svcCtx.ChatClient.Login(l.ctx, &chat.LoginReq{
+	// 无token, 交给rpc/chat 服务处理
+	chatRsp, err := l.svcCtx.ChatClient.Login(l.ctx, &chat.LoginReq{
 		Username: req.Username,
 		Password: req.Password,
 	})
@@ -71,9 +61,9 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRsp, err error
 		return nil, errors.New(1001, "login failed")
 	}
 
-	logx.Infof("[LoginLogic] login success. username:%s token: %s", req.Username, token)
+	logx.Infof("[LoginLogic] login success. username:%s token: %s", req.Username, chatRsp.Data)
 	return &types.LoginRsp{
-		Token:   token,
+		Token:   chatRsp.Data,
 		RetCode: 0,
 	}, nil
 
