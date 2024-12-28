@@ -14,8 +14,7 @@ Log:
   ServiceName:  "chat-server"
   Mode: "file"
   Encoding: "plain"
-  # Path: "/logs/AiChatPartner/rpc/chat-server"
-  Path:  "C:\\Users\\feifan\\Desktop\\lee\\codes\\my_project\\logs\\AiChatPartner\\rpc\\chat-server"
+  Path: "/logs/AiChatPartner/rpc/chat-server"
   Level: "debug"
   MaxContentLength: 1024
   Stat: false

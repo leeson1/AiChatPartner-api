@@ -52,10 +52,13 @@ func (l *LoginLogic) Login(in *chat.LoginReq) (*chat.LoginRsp, error) {
 	if err != nil {
 		return &chat.LoginRsp{RetCode: 1}, fmt.Errorf("[rpc/chat Login] Error marshalling map: %s", err)
 	}
-	l.svcCtx.RdsServer.Set(l.ctx, &db.SetRequest{
+	_, err = l.svcCtx.RdsServer.Set(l.ctx, &db.SetRequest{
 		Key:   in.Username,
 		Value: string(jsonData),
 	})
+	if err != nil {
+		return &chat.LoginRsp{RetCode: 1}, fmt.Errorf("[rpc/chat Login] Error setting key: %s", err)
+	}
 
 	logx.Info("[rpc/chat Login] login success. user: ", in.Username)
 

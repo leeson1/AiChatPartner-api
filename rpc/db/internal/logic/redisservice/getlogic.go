@@ -30,7 +30,7 @@ func NewGetLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetLogic {
 func (l *GetLogic) Get(in *db.GetRequest) (*db.GetResponse, error) {
 
 	value, err := l.svcCtx.RedisClient.GetCtx(l.ctx, in.Key)
-	if err != nil {
+	if err != nil || value == "" {
 		return &db.GetResponse{
 			Success:      false,
 			ErrorMessage: err.Error(),

@@ -1,3 +1,7 @@
+/*
+ * @Author: Leeson
+ * @Date: 2024-12-29 01:28:51
+ */
 package redisservicelogic
 
 import (
@@ -30,7 +34,7 @@ func (l *SetLogic) Set(in *db.SetRequest) (*db.SetResponse, error) {
 		return &db.SetResponse{
 			Success:      false,
 			ErrorMessage: err.Error(),
-		}, nil
+		}, err
 	}
 
 	return &db.SetResponse{Success: true}, nil
